@@ -11,6 +11,9 @@ import { VscChecklist } from "react-icons/vsc";
 import { CgLoadbarDoc } from "react-icons/cg";
 import { FaNotesMedical } from "react-icons/fa";
 import ListadoInventario from './Pages/Inventario/ListadoInventario';
+
+import Prescripciones from './Pages/Prescripciones/Prescripciones';
+
 function App() {
   const { collapseSidebar } = useProSidebar();
   return (
@@ -25,7 +28,7 @@ function App() {
             <MenuItem> Generar Reporte </MenuItem>
           </SubMenu>
           <SubMenu label="Prescripciones" icon={<FaNotesMedical/>}>
-            <MenuItem> Pie charts </MenuItem>
+            <MenuItem component={<Link to="/prescripciones"/>}>Prescripciones</MenuItem>
             <MenuItem> Line charts </MenuItem>
           </SubMenu>
           <SubMenu label="Reservar Medicamentos" icon={<VscChecklist/>}>
@@ -42,12 +45,14 @@ function App() {
       </main>
       <Routes>
         <Route path='/'>
-          <Route path='' element={<Home/>} />
           <Route path='Home' element={<Home/>} />
         </Route> 
         <Route path='/Inventario'>
           <Route path='' element={<ListadoInventario/>} />
         </Route> 
+        <Route path='/prescripciones'>
+          <Route path='' element={<Prescripciones/>} />
+        </Route>
       </Routes>
     </div>
    
