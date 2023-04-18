@@ -15,17 +15,29 @@ import ListadoInventario from './Pages/Inventario/ListadoInventario';
 import Prescripciones from './Pages/Prescripciones/Prescripciones';
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
-
+import Medicamentos from './Pages/Medicamentos/Medicamentos';
 
 function App() {
   const { collapseSidebar, toggleSidebar } = useProSidebar();
   const [showNav, setShowNav] = useState(true);
+  const _sm = 600; // Default sm size
+
+  const changeNavState = (sm) => {
+    const _show = window.innerWidth > sm ? true : false;
+    setShowNav(_show);
+    if (_show === false) collapseSidebar(false);
+  }
+
+  window.onload = () => {
+    changeNavState(_sm);
+  };
+
   useEffect(() => {
-    window.addEventListener('resize', (e) => {
-      // 600 === sm
-      setShowNav(window.innerWidth > 600 ? true : false);
+    window.addEventListener('resize', () => {
+      changeNavState(_sm);
     });
   });
+
   return (
     <>
     <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
@@ -36,6 +48,7 @@ function App() {
           <MenuItem component={<Link to="/Home" />} icon={<BsFillHouseFill/>}> Home</MenuItem>
           <SubMenu label="Inventario" icon={<MdInventory/>}>
             <MenuItem component={<Link to="/Inventario" />}> Listado Medicamentos </MenuItem>
+            <MenuItem component={<Link to="/medicamentos" />}>Medicamentos </MenuItem>
             <MenuItem> Agregar Inventario </MenuItem>
             <MenuItem> Generar Reporte </MenuItem>
           </SubMenu>
@@ -64,6 +77,9 @@ function App() {
         </Route> 
         <Route path='/prescripciones'>
           <Route path='' element={<Prescripciones/>} />
+        </Route>
+        <Route path='/medicamentos'>
+          <Route path='' element={<Medicamentos/>} />
         </Route>
       </Routes>
     </div>
