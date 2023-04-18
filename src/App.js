@@ -13,14 +13,26 @@ import { FaNotesMedical } from "react-icons/fa";
 import ListadoInventario from './Pages/Inventario/ListadoInventario';
 
 import Prescripciones from './Pages/Prescripciones/Prescripciones';
+import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+
 
 function App() {
-  const { collapseSidebar } = useProSidebar();
+  const { collapseSidebar, toggleSidebar } = useProSidebar();
+  const [showNav, setShowNav] = useState(true);
+  useEffect(() => {
+    window.addEventListener('resize', (e) => {
+      // 600 === sm
+      setShowNav(window.innerWidth > 600 ? true : false);
+    });
+  });
   return (
+    <>
+    <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
     <div style={{ display: 'flex', height: '100%' }}>
       <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6'}} breakPoint='sm'>        
         <Menu>
-          <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>}></MenuItem>
+          <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>} style={{display: !showNav ? 'none' : 'block'}}></MenuItem>
           <MenuItem component={<Link to="/Home" />} icon={<BsFillHouseFill/>}> Home</MenuItem>
           <SubMenu label="Inventario" icon={<MdInventory/>}>
             <MenuItem component={<Link to="/Inventario" />}> Listado Medicamentos </MenuItem>
@@ -55,8 +67,7 @@ function App() {
         </Route>
       </Routes>
     </div>
-   
-
+    </>
   );
 }
 
