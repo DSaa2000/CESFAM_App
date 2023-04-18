@@ -46,7 +46,7 @@ const headCells = [
   { id: 'name', numeric: false, disablePadding: false, label: 'Medicamento' },
   { id: 'lab', numeric: false, disablePadding: false, label: 'Laboratorio' },
   { id: 'reserva', numeric: true, disablePadding: false, label: 'Cantidad Reservada' },
-  { id: 'fecha', numeric: false, disablePadding: false, label: 'Fecha Llegada' },
+  { id: 'fecha', numeric: false, align: 'center', disablePadding: false, label: 'Fecha Llegada' },
 ];
 
 const rows = [  
@@ -99,7 +99,7 @@ function EnhancedTableHead(props) {
           <Checkbox color="primary" indeterminate={numSelected > 0 && numSelected < rowCount} checked={rowCount > 0 && numSelected === rowCount} onChange={onSelectAllClick} inputProps={{ 'aria-label': 'Todos seleccionados' }} />
         </TableCell>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={headCell.disablePadding ? 'none' : 'normal'} sortDirection={orderBy === headCell.id ? order : false} >
+          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : (headCell.align ? headCell.align : 'left')} padding={headCell.disablePadding ? 'none' : 'normal'} sortDirection={orderBy === headCell.id ? order : false} >
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
               <b>{headCell.label}</b>
               {orderBy === headCell.id ? (

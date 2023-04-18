@@ -19,7 +19,7 @@ function App() {
   const { collapseSidebar } = useProSidebar();
   return (
     <div style={{ display: 'flex', height: '100%'}}>
-      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%'}} breakPoint='sm'>        
+      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%'}}>        
         <Menu>
           <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>}></MenuItem>
           <MenuItem component={<Link to="/Home" />} icon={<BsFillHouseFill/>}> Home</MenuItem>
