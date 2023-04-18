@@ -5,6 +5,10 @@ import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 
+import { Modal } from '@mui/material';
+
+
+
 // Components
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -32,6 +36,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import SearchIcon from '@mui/icons-material/Search';
+
+
 
 function createData(code, name, lab, reserva,fecha,icon) {
     return { code, name, lab, reserva, fecha,icon };
@@ -291,7 +297,9 @@ export default function MedicamentosReservados () {
   );
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{margin: '20px', padding: '20px'}}>
     
@@ -305,7 +313,19 @@ export default function MedicamentosReservados () {
                 </IconButton>
                 <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Buscar..." inputProps={{ 'aria-label': 'Buscar...' }}  />
             </div>
-            <Button variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none' }}><AddIcon /></Button>
+            <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none' }}><AddIcon /></Button>
+              <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                <Paper>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                      Agregar Medicamento
+                  </Typography>
+                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                      Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                  </Typography>
+                  <Button variant="contained">Cancelar</Button>
+                  <Button variant="contained">Agregar</Button>
+                </Paper>
+              </Modal>
         </div>
         
         <Box sx={{ width: '100%' }}>
