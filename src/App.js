@@ -19,6 +19,8 @@ import Prescripciones from './Pages/Prescripciones/Prescripciones';
 import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Medicamentos from './Pages/Medicamentos/Medicamentos';
+import LoginForm from './Pages/Login/LoginForm'; 
+import RecetaMedica from './Pages/Receta/RecetaMedica'; 
 
 
 
@@ -95,6 +97,12 @@ function App() {
         <Route path='/medicamentos'>
           <Route path='' element={<Medicamentos/>} />
         </Route>
+        <Route path='/login'>          
+          <Route path='' element={<LoginForm/>} />
+        </Route> 
+        <Route path='/RecetaMedica'>          
+          <Route path='' element={<RecetaMedica/>} />
+        </Route> 
       </Routes>
     </div>
     </>
