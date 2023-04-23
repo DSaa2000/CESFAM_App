@@ -122,6 +122,7 @@ const Prescripciones = () => {
         const _show = window.innerWidth > sm ? false : true;
         setHide(_show);
         if (_show === false) handleClose();
+        console.log(hide);
     }
 
     window.onload = () => {
