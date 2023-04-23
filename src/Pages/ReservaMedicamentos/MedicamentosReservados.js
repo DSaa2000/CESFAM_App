@@ -46,7 +46,7 @@ const Title = ({ children }) => {
 
 const CustomBox = ({ children, style }) => {
   return (
-      <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "grey", ...style}} elevation={0}>
+      <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "#F4EEE5", ...style}} elevation={0}>
           {children}
       </Paper>
   );
@@ -57,7 +57,7 @@ const Field = (props) => {
       <Grid item xs={props.xs}>
           <Title>{props.header}</Title>
           <CustomBox>
-              <InputBase sx={{width: "100%"}}/>
+              <InputBase sx={{width: "100%"}} placeholder={props.placeholder}/>
           </CustomBox>
       </Grid>
   )
@@ -342,7 +342,7 @@ export default function MedicamentosReservados () {
                   </Paper>
                   <Grid container spacing={2} sx={{padding:"1em"}}>
                     <Grid item xs={10}>
-                    <Field header={"Medicamento"}></Field>
+                    <Field header={"Medicamento"} placeholder={'hola'}></Field>
                     </Grid>
                     <Grid item xs={2}>
                     <Field header={"Cantidad"}></Field>
@@ -370,24 +370,24 @@ export default function MedicamentosReservados () {
             </div>
             <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none' }}><AddIcon /></Button>
               <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)"}}>
-                  <Paper sx={{background:"Blue"}}>
+                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)",backgroundColor: "#FEFBF6"}}>
+                  <Paper sx={{background:"#F4EEE5", padding: '1em'}} elevation={'0'}>
                   <Typography id="modal-modal-title" variant="h6" component="h2">
-                      Agregar Medicamento
+                      <b>Agregar Medicamento</b>
                   </Typography>
                   </Paper>
                   <Grid container spacing={2} sx={{padding:"1em"}}>
                     <Grid item xs={10}>
-                    <Field header={"Medicamento"}></Field>
+                      <Field header={"Medicamento"} placeholder='Ingrese medicamento...'></Field>
                     </Grid>
                     <Grid item xs={2}>
-                    <Field header={"Cantidad"}></Field>
+                    <Field header={"Cantidad"} placeholder='0'></Field>
                     </Grid>
                     <Grid item xs={12}>
-                    <Field header={"Rut Paciente"}></Field>
+                    <Field header={"RUT Paciente"} placeholder='Ingrese RUT...'></Field>
                     </Grid>
                     <Grid item xs={12}>
-                    <Field header={"Prescripcion"}></Field>
+                    <Field header={"Prescripción"} placeholder='Ingrese Prescripción'></Field>
                     </Grid>
                     <Grid item xs={12} spacing={2}>
                       <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>

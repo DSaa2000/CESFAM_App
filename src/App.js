@@ -51,22 +51,17 @@ function App() {
           <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>} style={{display: !showNav ? 'none' : 'block'}}></MenuItem>
           <MenuItem component={<Link to="/Home" />} icon={<BsFillHouseFill/>}> Home</MenuItem>
           <SubMenu label="Inventario" icon={<MdInventory/>}>
-            <MenuItem component={<Link to="/Inventario" />}> Listado Medicamentos </MenuItem>
-            <MenuItem component={<Link to="/medicamentos" />}>Medicamentos </MenuItem>
+            <MenuItem component={<Link to="/medicamentos" />}>Listado Medicamentos </MenuItem>
             <MenuItem> Agregar Inventario </MenuItem>
             <MenuItem component={<Link to="/Inventario/Reportes" />}> Generar Reporte Stock</MenuItem>
           </SubMenu>
           <SubMenu label="Prescripciones" icon={<FaNotesMedical/>}>
             <MenuItem component={<Link to="/prescripciones"/>}>Prescripciones</MenuItem>
-            <MenuItem> Line charts </MenuItem>
           </SubMenu>
           <SubMenu label="Reservar Medicamentos" icon={<VscChecklist/>}>            
             <MenuItem component={<Link to="/ReservaMedicamentos/List" />}> Reserva de Medicamentos </MenuItem>
-            <MenuItem> Line charts </MenuItem>
           </SubMenu>
           <SubMenu label="Entrega Medicamentos" icon={<CgLoadbarDoc/>}>
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
           </SubMenu>
         </Menu>
       </Sidebar>
