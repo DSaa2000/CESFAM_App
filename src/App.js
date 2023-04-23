@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route, Link} from 'react-router-dom';
+import { Routes, Route, Link, useLocation} from 'react-router-dom';
 // Pages
 import Home from './Pages/Home';
 // Menu
@@ -27,6 +27,7 @@ import RecetaMedica from './Pages/Receta/RecetaMedica';
 function App() {
   const { collapseSidebar, toggleSidebar } = useProSidebar();
   const [showNav, setShowNav] = useState(true);
+  const [home, setHome] = useState(true);
 
   window.onload = () => {
     changeNavState(_sm);
@@ -41,6 +42,8 @@ function App() {
     console.log(showNav);
   }
   
+  const getLocation = useLocation();
+
   useEffect(() => {
     window.addEventListener('resize', () => {
       changeNavState(_sm);
@@ -49,18 +52,19 @@ function App() {
     if(window.innerWidth < _sm) {
       setShowNav(false);
     }
+
+    setHome(getLocation.pathname === '/');
   });
-  
 
   return (    
     <>
-    <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
+    <Button onClick={() => toggleSidebar()} style={{display: (showNav || home) ? 'none' : 'block'}}><BsList/></Button>
     <div style={{ display: 'flex', height: '100%' }}>
            
-      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%'}} breakPoint='sm'>        
+      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%', display: home ? 'none' : 'block'}} breakPoint='sm'>        
         <Menu>
           <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>} style={{display: !showNav ? 'none' : 'block'}}></MenuItem>
-          <MenuItem component={<Link to="/Home" />} icon={<BsFillHouseFill/>}> Home</MenuItem>
+          <MenuItem component={<Link to="/" />} icon={<BsFillHouseFill/>}>Login</MenuItem>
           <SubMenu label="Inventario" icon={<MdInventory/>}>
             <MenuItem component={<Link to="/medicamentos" />}>Listado Medicamentos </MenuItem>
             <MenuItem> Agregar Inventario </MenuItem>
@@ -80,13 +84,11 @@ function App() {
       </main>
       <Routes>
         <Route path='/'>
-          <Route path='Home' element={<Home/>} />
+          <Route path='' element={<LoginForm/>} />
         </Route> 
         <Route path='/Inventario'>
           <Route path='' element={<ListadoInventario/>} />
           <Route path='Reportes' element={<StockMedicamentos/>} />
-        </Route> 
-        <Route path='/Prescripciones'>
         </Route> 
         <Route path='/ReservaMedicamentos'>          
           <Route path='List' element={<MedicamentosReservados/>} />
@@ -97,9 +99,6 @@ function App() {
         <Route path='/medicamentos'>
           <Route path='' element={<Medicamentos/>} />
         </Route>
-        <Route path='/login'>          
-          <Route path='' element={<LoginForm/>} />
-        </Route> 
         <Route path='/RecetaMedica'>          
           <Route path='' element={<RecetaMedica/>} />
         </Route> 
