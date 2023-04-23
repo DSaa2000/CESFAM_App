@@ -1,7 +1,8 @@
 import React from "react";
-import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Stack } from "@mui/material";
+import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Stack, Modal } from "@mui/material";
+
 import SearchIcon from '@mui/icons-material/Search';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const _spacing = 2;
 
@@ -37,7 +38,7 @@ const CustomBox = ({ children, style }) => {
 
 const Field = (props) => {
     return (
-        <Grid item xs={props.xs}>
+        <Grid item xs={props.xs} sm={props.sm}>
             <Title>{props.header}</Title>
             <CustomBox>
                 <InputBase sx={{width: "100%"}}/>
@@ -69,7 +70,9 @@ const Medicamentos = () => {
     const Item = (props) => {
     return(
         <>
-        <ListItem key={props.key}>
+        <ListItem key={props.key} onClick={() => {
+            if (hide === true) handleOpen();
+        } }>
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -85,8 +88,30 @@ const Medicamentos = () => {
         <Divider/>
         </>
     );
-}
+    }
     const [query, setQuery] = useState('');
+    const [hide, setHide] = useState(false);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const _md = 900; // Default md size
+
+    const changeNavState = (sm) => {
+        const _show = window.innerWidth > sm ? false : true;
+        setHide(_show);
+        if (_show === false) handleClose();
+    }
+
+    window.onload = () => {
+        changeNavState(_md);
+    };
+    
+    useEffect(() => {
+    window.addEventListener('resize', () => {
+        changeNavState(_md);
+    });
+    });
 
     const handleQuery = (e) => {
         setQuery(e.target.value);
@@ -96,7 +121,7 @@ const Medicamentos = () => {
         <Box sx={{ flexGrow: 1}}>
             <Grid container spacing={_spacing}>
                 {/* Listado de items */}
-                <Grid item xs={3}>
+                <Grid item xs={12} md={4} lg={6}>
                     <List sx={{
                         maxHeight: "100vh",
                         overflowY: "scroll",
@@ -106,11 +131,11 @@ const Medicamentos = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Lista de inventario</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} text={item.text}/>)}
+                        {itemsList.filter(item => item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} text={item.text}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
-                <Grid item xs={9} p={_spacing}>
+                <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
                         <Field xs={8} header={"Nombre Medicamento"}/>
@@ -128,6 +153,31 @@ const Medicamentos = () => {
                         </Grid>
                     </Grid>
                 </Grid>
+                {/* Medicamentos modal */}
+                <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                    <Paper sx={{width: '100%', height: '100%', backgroundColor: "#FEFBF6", display: "flex", justifyContent: 'center', alignItems: 'center'}}>
+                        <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'block' : 'none', overflowY: 'scroll', height: '100vh'}}>
+                            <Button variant='contained' onClick={handleClose}>X</Button>
+                            <Grid container spacing={_spacing}>
+                                <Grid item xs={12}><h1>Medicamento</h1></Grid>
+                                <Field xs={12} sm={6} header={"Nombre Medicamento"}/>
+                                <Field xs={12} sm={6} header={"Codigo"}/>
+                                <Field xs={12} sm={6} header={"Laboratorio"}/>
+                                <Field xs={12} sm={6} header={"Cantidad en Stock"}/>
+                                <Field xs={12} sm={6} header={"Dosis"}/>
+                                <Field xs={12} sm={6} header={"Unidad Medida"}/>
+                                <Field xs={12} sm={12} header={"Condiciones de Conservación"}/>
+                                <Grid item xs={12} spacing={_spacing}>
+                                    <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
+                                        <Button variant="contained">Editar</Button>
+                                        <Button variant="contained">Registrar baja</Button>
+                                    </Stack>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                </Modal>
+                
             </Grid>
         </Box>
     )

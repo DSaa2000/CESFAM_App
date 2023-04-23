@@ -42,9 +42,9 @@ function App() {
   });
 
   return (    
-    
+    <>
+    <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
     <div style={{ display: 'flex', height: '100%' }}>
-      <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
            
       <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%'}} breakPoint='sm'>        
         <Menu>
@@ -88,6 +88,7 @@ function App() {
         </Route>
       </Routes>
     </div>
+    </>
   );
 }
 export default App;
