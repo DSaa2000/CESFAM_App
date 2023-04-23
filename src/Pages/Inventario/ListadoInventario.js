@@ -72,7 +72,7 @@ const ListadoInventario = () => {
           <Grid item xs={4}>
             <Item>xs=4</Item>
           
-            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} aria-label="contacts">
+            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paperblue' }} aria-label="contacts">
                 {listItems}                
             </List>
           </Grid>

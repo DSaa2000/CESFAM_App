@@ -1,3 +1,4 @@
+import '../Medicamentos/Medicamentos.css'
 import React from "react";
 import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Modal } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
@@ -39,7 +40,7 @@ const CustomBox = ({ children, style }) => {
 
 const Field = (props) => {
     return (
-        <Grid item xs={props.xs}>
+        <Grid item xs={props.xs} md={props.md}>
             <Title>{props.header}</Title>
             <CustomBox>
                 <InputBase sx={{width: "100%"}}/>
@@ -51,7 +52,7 @@ const Field = (props) => {
 const SearchBar = (props) => {
     return (
         <div style={{
-            background: "cyan",
+            background: "#A6D1E6",
             color: "black",
             display: "flex",
             alignItems: "center",
@@ -74,13 +75,24 @@ const medicamentos = [
 ];
 
 const Prescripciones = () => {
+    const s = (e,number) => {
+        if (hide === true) handleOpen();
+        let x = document.getElementsByClassName('itemSelected');
+        for (let i = 0; i< x.length; i++) {
+            x[i].classList.remove('itemSelected');
+        }
+        if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
+        else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.parentNode.className = 'test itemSelected';
+
+        //setTitle(number); 
+    };
     const Item = (props) => {
     return(
-        <>
-        <ListItem key={props.key} onClick={() => {
-                setTitle(props.number); 
-                if (hide === true) handleOpen();
-            }}>
+        <div  onClick={(e) => s(e,props.number)} className="test">
+        <ListItem key={props.key}>
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -94,7 +106,7 @@ const Prescripciones = () => {
             />
         </ListItem>
         <Divider/>
-        </>
+        </div>
     );
 }
     const [query, setQuery] = useState('');
@@ -104,7 +116,7 @@ const Prescripciones = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const _md = 900; // Default md size
+    const _lg = 1200; // Default lg size
 
     const changeNavState = (sm) => {
         const _show = window.innerWidth > sm ? false : true;
@@ -113,12 +125,12 @@ const Prescripciones = () => {
     }
 
     window.onload = () => {
-        changeNavState(_md);
+        changeNavState(_lg);
     };
     
     useEffect(() => {
     window.addEventListener('resize', () => {
-        changeNavState(_md);
+        changeNavState(_lg);
     });
     });
 
@@ -130,7 +142,7 @@ const Prescripciones = () => {
         <Box sx={{ flexGrow: 1}}>
             <Grid container spacing={_spacing}>
                 {/* Listado de items */}
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} lg={4}>
                     <List sx={{
                         maxHeight: "100vh",
                         overflowY: "scroll",
@@ -144,15 +156,15 @@ const Prescripciones = () => {
                     </List>
                 </Grid>
                 {/* Medicamentos */}
-                <Grid item xs={12} sm={8} p={_spacing} >
-                    <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'block'}}>
+                <Grid item xs={12} lg={8} p={_spacing} >
+                    <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'inherith'}}>
                         <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
-                        <Field xs={8} header={"Identificador"}/>
-                        <Field xs={4} header={"Fecha de Emisión"}/>
+                        <Field xs={6} header={"Identificador"}/>
+                        <Field xs={6} header={"Fecha de Emisión"}/>
                         <Field xs={12} header={"Nombre Completo del Paciente"}/>
-                        <Field xs={4} header={"RUN"}/>
-                        <Field xs={4} header={"Fecha de Nacimiento"}/>
-                        <Field xs={4} header={"Edad"}/>
+                        <Field xs={6} header={"RUN"}/>
+                        <Field xs={6} header={"Fecha de Nacimiento"}/>
+                        <Field xs={12} header={"Edad"}/>
                         <Grid item xs={12}>
                             <Title>Prescripción</Title>
                             <Grid container spacing={_spacing}>
@@ -224,24 +236,23 @@ const Prescripciones = () => {
                 {/* Medicamentos modal */}
                 <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
                     <Paper sx={{width: '100%', height: '100%', backgroundColor: "#FEFBF6", display: "flex", justifyContent: 'center', alignItems: 'center'}}>
-                        <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'block' : 'none', overflowY: 'scroll', height: '100vh'}}>
-                        <Button variant='contained' onClick={handleClose}>X</Button>
+                        <Grid item xs={12} md={8} p={_spacing} style={{display: hide ? 'inherith' : 'none', overflowY: 'scroll', height: '100vh'}}>
+                            <Button variant='contained' onClick={handleClose}>X</Button>
                             <Grid item xs={12} p={_spacing}>
                                 <Grid container spacing={_spacing}>
                                     <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
-                                    <Field xs={12} header={"Identificador"}/>
-                                    <Field xs={12} header={"Fecha de Emisión"}/>
+                                    <Field xs={12} md={6} header={"Identificador"}/>
+                                    <Field xs={12} md={6} header={"Fecha de Emisión"}/>
                                     <Field xs={12} header={"Nombre Completo del Paciente"}/>
-                                    <Field xs={12} header={"RUN"}/>
-                                    <Field xs={12} header={"Fecha de Nacimiento"}/>
+                                    <Field xs={12} md={6} header={"RUN"}/>
+                                    <Field xs={12} md={6} header={"Fecha de Nacimiento"}/>
                                     <Field xs={12} header={"Edad"}/>
                                     <Grid item xs={12}>
                                         <Title>Prescripción</Title>
                                         <Grid container spacing={_spacing}>
-                                            <Grid item xs={12}>
                                                 {medicamentos.map(medicamento => {
                                                     return (
-                                                        <>
+                                                        <Grid item xs={12} sm={6}>
                                                             <CustomBox style={{height: "2em", display: "flex", alignItems: "center", marginTop: '.5em'}}>
                                                                 <p><b>Medicamento</b></p>
                                                             </CustomBox>
@@ -257,21 +268,20 @@ const Prescripciones = () => {
                                                             <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
                                                                 <p>Estado: {medicamento.state}</p>
                                                             </CustomBox>
-                                                        </>
+                                                        </Grid>
                                                     )
                                                 })}
-                                            </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={12} sm={5}>
                                         <p>
                                             <b>Dr. Federico Santa María</b><br></br>
                                             RUN 11.111.111-1<br></br>
                                             Especialidad: Médico Cirujano
                                         </p>
                                     </Grid>
-                                    <Grid item xs={12}></Grid>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={12} sm={1}></Grid>
+                                    <Grid item xs={12} sm={6}>
                                         <Title>Estado</Title>
                                         <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>Parcial</CustomBox>
                                         <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em"}}>Finalizar entrega</Button>
