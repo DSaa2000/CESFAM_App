@@ -20,26 +20,35 @@ import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Medicamentos from './Pages/Medicamentos/Medicamentos';
 
+
+
 function App() {
   const { collapseSidebar, toggleSidebar } = useProSidebar();
   const [showNav, setShowNav] = useState(true);
-  const _sm = 600; // Default sm size
-
-  const changeNavState = (sm) => {
-    const _show = window.innerWidth > sm ? true : false;
-    setShowNav(_show);
-    if (_show === false) collapseSidebar(false);
-  }
 
   window.onload = () => {
     changeNavState(_sm);
   };
-
+  
+  const _sm = 600; // Default sm size
+  
+  const changeNavState = (sm) => {
+    const _show = window.innerWidth > sm ? true : false;
+    setShowNav(_show);
+    if (_show === false) collapseSidebar(false);
+    console.log(showNav);
+  }
+  
   useEffect(() => {
     window.addEventListener('resize', () => {
       changeNavState(_sm);
     });
+
+    if(window.innerWidth < _sm) {
+      setShowNav(false);
+    }
   });
+  
 
   return (    
     <>

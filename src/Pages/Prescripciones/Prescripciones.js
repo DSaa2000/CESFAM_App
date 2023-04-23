@@ -130,9 +130,13 @@ const Prescripciones = () => {
     };
     
     useEffect(() => {
-    window.addEventListener('resize', () => {
-        changeNavState(_lg);
-    });
+        window.addEventListener('resize', () => {
+            changeNavState(_lg);
+        });
+
+        if(window.innerWidth < _lg) {
+            setHide(true);
+        }
     });
 
     const handleQuery = (e) => {
@@ -226,8 +230,8 @@ const Prescripciones = () => {
                                 Especialidad: Médico Cirujano
                             </p>
                         </Grid>
-                        <Grid item xs={3}></Grid>
-                        <Grid item xs={3}>
+                        <Grid item xs={2}></Grid>
+                        <Grid item xs={4}>
                             <Title>Estado</Title>
                             <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>Parcial</CustomBox>
                             <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em"}}>Finalizar entrega</Button>

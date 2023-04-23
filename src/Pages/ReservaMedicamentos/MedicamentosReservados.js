@@ -332,43 +332,17 @@ export default function MedicamentosReservados () {
         <h1>Reserva de Medicamentos</h1>
         
         <div style={{marginBottom: '20px', color: 'black', borderRadius: '5px', display: 'inline-flex',width: '100%'}}>
-            <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none' }}><FilterAltIcon /></Button>
-            <Modal open={open2} onClose={handleCloseFilter} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)"}}>
-                  <Paper sx={{background:"Blue"}}>
-                  <Typography id="modal-modal-title" variant="h6" component="h2">
-                      Seleccionar Filtrosn
-                  </Typography>
-                  </Paper>
-                  <Grid container spacing={2} sx={{padding:"1em"}}>
-                    <Grid item xs={10}>
-                    <Field header={"Medicamento"} placeholder={'hola'}></Field>
-                    </Grid>
-                    <Grid item xs={2}>
-                    <Field header={"Cantidad"}></Field>
-                    </Grid>
-                    <Grid item xs={12}>
-                    <Field header={"Rut Paciente"}></Field>
-                    </Grid>
-                    <Grid item xs={12}>
-                    <Field header={"Prescripcion"}></Field>
-                    </Grid>
-                    <Grid item xs={12} spacing={2}>
-                      <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
-                          <Button variant="contained" onClick={handleCloseFilter}>Cancelar</Button>
-                          <Button variant="contained">Agregar</Button>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Modal>
-            <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', marginRight: '10px'}}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={10}>
+            <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', display: 'flex'}}>
                 <IconButton type="button" sx={{ p: '10px' }} aria-label="search" >
                     <SearchIcon />
                 </IconButton>
                 <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Buscar..." inputProps={{ 'aria-label': 'Buscar...' }}  />
             </div>
-            <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none' }}><AddIcon /></Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={1}>
+              <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none',  width:'100%'}}><AddIcon /></Button>
               <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
                 <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)",backgroundColor: "#FEFBF6"}}>
                   <Paper sx={{background:"#F4EEE5", padding: '1em'}} elevation={'0'}>
@@ -398,6 +372,40 @@ export default function MedicamentosReservados () {
                   </Grid>
                 </Paper>
               </Modal>
+            </Grid>
+            <Grid item xs={12} sm={6} md={1}>
+              <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none', width:'100%'}}><FilterAltIcon /></Button>
+              <Modal open={open2} onClose={handleCloseFilter} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                  <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)"}}>
+                    <Paper sx={{background:"Blue"}}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Seleccionar Filtrosn
+                    </Typography>
+                    </Paper>
+                    <Grid container spacing={2} sx={{padding:"1em"}}>
+                      <Grid item xs={10}>
+                      <Field header={"Medicamento"} placeholder={'hola'}></Field>
+                      </Grid>
+                      <Grid item xs={2}>
+                      <Field header={"Cantidad"}></Field>
+                      </Grid>
+                      <Grid item xs={12}>
+                      <Field header={"Rut Paciente"}></Field>
+                      </Grid>
+                      <Grid item xs={12}>
+                      <Field header={"Prescripcion"}></Field>
+                      </Grid>
+                      <Grid item xs={12} spacing={2}>
+                        <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
+                            <Button variant="contained" onClick={handleCloseFilter}>Cancelar</Button>
+                            <Button variant="contained">Agregar</Button>
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+              </Modal>
+            </Grid>
+          </Grid>
         </div>
         
         <Box sx={{ width: '100%' }}>
