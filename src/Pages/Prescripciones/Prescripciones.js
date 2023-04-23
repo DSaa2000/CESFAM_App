@@ -1,3 +1,4 @@
+import '../Medicamentos/Medicamentos.css'
 import React from "react";
 import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
@@ -51,7 +52,7 @@ const Field = (props) => {
 const SearchBar = (props) => {
     return (
         <div style={{
-            background: "cyan",
+            background: "#A6D1E6",
             color: "black",
             display: "flex",
             alignItems: "center",
@@ -74,10 +75,23 @@ const medicamentos = [
 ];
 
 const Prescripciones = () => {
+    const s = (e,number) => {
+        let x = document.getElementsByClassName('itemSelected');
+        for (let i = 0; i< x.length; i++) {
+            x[i].classList.remove('itemSelected');
+        }
+        if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
+        else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.parentNode.className = 'test itemSelected';
+
+        //setTitle(number); 
+    };
     const Item = (props) => {
     return(
-        <>
-        <ListItem key={props.key} onClick={() => setTitle(props.number)}>
+        <div  onClick={(e) => s(e,props.number)} className="test">
+        <ListItem key={props.key}>
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -91,11 +105,11 @@ const Prescripciones = () => {
             />
         </ListItem>
         <Divider/>
-        </>
+        </div>
     );
 }
     const [query, setQuery] = useState('');
-    const [title, setTitle] = useState('P0');
+    const [title, setTitle] = useState('');
 
     const handleQuery = (e) => {
         setQuery(e.target.value);

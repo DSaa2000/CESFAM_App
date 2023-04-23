@@ -1,4 +1,5 @@
 import React from "react";
+import './Medicamentos.css';
 import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Stack } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import { useState } from "react";
@@ -29,7 +30,7 @@ const Title = ({ children }) => {
 
 const CustomBox = ({ children, style }) => {
     return (
-        <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "grey", ...style}} elevation={0}>
+        <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "#F4EEE5", ...style}} elevation={0}>
             {children}
         </Paper>
     );
@@ -47,9 +48,11 @@ const Field = (props) => {
 }
 
 const SearchBar = (props) => {
+    
     return (
-        <div style={{
-            background: "cyan",
+        <div 
+            style={{
+            background: "#A6D1E6",
             color: "black",
             display: "flex",
             alignItems: "center",
@@ -66,10 +69,24 @@ const SearchBar = (props) => {
 }
 
 const Medicamentos = () => {
+    const s = (e) => {
+        let x = document.getElementsByClassName('itemSelected');
+        for (let i = 0; i< x.length; i++) {
+            console.log(x[i])
+            x[i].classList.remove('itemSelected');
+        }
+        console.log('Class', );
+        if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
+        else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.className = 'test itemSelected';
+        else if (e.target.parentNode.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.parentNode.className = 'test itemSelected';
+
+    };
     const Item = (props) => {
     return(
-        <>
-        <ListItem key={props.key}>
+        <div onClick={s} className="test">
+        <ListItem key={props.key}  >
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -83,7 +100,7 @@ const Medicamentos = () => {
             />
         </ListItem>
         <Divider/>
-        </>
+        </div>
     );
 }
     const [query, setQuery] = useState('');
