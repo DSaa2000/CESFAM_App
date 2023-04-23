@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import PropTypes from 'prop-types';
-
+import { Grid , Stack} from "@mui/material";
 import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 
@@ -36,8 +36,32 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import SearchIcon from '@mui/icons-material/Search';
+import { blue } from '@mui/material/colors';
 
+const Title = ({ children }) => {
+  return (
+      <p style={{fontWeight: "bold", margin: 0}}>{children}</p>
+  );
+}
 
+const CustomBox = ({ children, style }) => {
+  return (
+      <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "grey", ...style}} elevation={0}>
+          {children}
+      </Paper>
+  );
+}
+
+const Field = (props) => {
+  return (
+      <Grid item xs={props.xs}>
+          <Title>{props.header}</Title>
+          <CustomBox>
+              <InputBase sx={{width: "100%"}}/>
+          </CustomBox>
+      </Grid>
+  )
+}
 
 function createData(code, name, lab, reserva,fecha,icon) {
     return { code, name, lab, reserva, fecha,icon };
@@ -281,7 +305,6 @@ export default function MedicamentosReservados () {
       setRowsPerPage(updatedRowsPerPage);
 
       setPage(0);
-
       const sortedRows = stableSort(rows, getComparator(order, orderBy));
       const updatedRows = sortedRows.slice(
         0 * updatedRowsPerPage,
@@ -300,13 +323,45 @@ export default function MedicamentosReservados () {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [open2, setOpenFilter] = React.useState(false);
+  const handleOpenFilter = () => setOpenFilter(true);
+  const handleCloseFilter = () => setOpenFilter(false);
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{margin: '20px', padding: '20px'}}>
     
         <h1>Reserva de Medicamentos</h1>
         
         <div style={{marginBottom: '20px', color: 'black', borderRadius: '5px', display: 'inline-flex',width: '100%'}}>
-            <Button variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none' }}><FilterAltIcon /></Button>
+            <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none' }}><FilterAltIcon /></Button>
+            <Modal open={open2} onClose={handleCloseFilter} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)"}}>
+                  <Paper sx={{background:"Blue"}}>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                      Seleccionar Filtrosn
+                  </Typography>
+                  </Paper>
+                  <Grid container spacing={2} sx={{padding:"1em"}}>
+                    <Grid item xs={10}>
+                    <Field header={"Medicamento"}></Field>
+                    </Grid>
+                    <Grid item xs={2}>
+                    <Field header={"Cantidad"}></Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                    <Field header={"Rut Paciente"}></Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                    <Field header={"Prescripcion"}></Field>
+                    </Grid>
+                    <Grid item xs={12} spacing={2}>
+                      <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
+                          <Button variant="contained" onClick={handleCloseFilter}>Cancelar</Button>
+                          <Button variant="contained">Agregar</Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Modal>
             <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', marginRight: '10px'}}>
                 <IconButton type="button" sx={{ p: '10px' }} aria-label="search" >
                     <SearchIcon />
@@ -315,15 +370,32 @@ export default function MedicamentosReservados () {
             </div>
             <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none' }}><AddIcon /></Button>
               <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                <Paper>
+                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)"}}>
+                  <Paper sx={{background:"Blue"}}>
                   <Typography id="modal-modal-title" variant="h6" component="h2">
                       Agregar Medicamento
                   </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                      Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                  </Typography>
-                  <Button variant="contained">Cancelar</Button>
-                  <Button variant="contained">Agregar</Button>
+                  </Paper>
+                  <Grid container spacing={2} sx={{padding:"1em"}}>
+                    <Grid item xs={10}>
+                    <Field header={"Medicamento"}></Field>
+                    </Grid>
+                    <Grid item xs={2}>
+                    <Field header={"Cantidad"}></Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                    <Field header={"Rut Paciente"}></Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                    <Field header={"Prescripcion"}></Field>
+                    </Grid>
+                    <Grid item xs={12} spacing={2}>
+                      <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
+                          <Button variant="contained" onClick={handleClose}>Cancelar</Button>
+                          <Button variant="contained">Agregar</Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
                 </Paper>
               </Modal>
         </div>
