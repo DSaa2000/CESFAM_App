@@ -35,7 +35,6 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-
 const lista = [
     { id: '#000001', title: 'Medicamento 1'},
     { id: '#000002', title: 'Medicamento 2'},
