@@ -31,7 +31,7 @@ const Title = ({ children }) => {
 
 const CustomBox = ({ children, style }) => {
     return (
-        <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "grey", ...style}} elevation={0}>
+        <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "#F4EEE5", ...style}} elevation={0}>
             {children}
         </Paper>
     );
@@ -121,7 +121,7 @@ const Prescripciones = () => {
                 {/* Medicamentos */}
                 <Grid item xs={9} p={_spacing}>
                     <Grid container spacing={_spacing}>
-                        <Grid item xs={12}><h1>Prescripcion #{title}</h1></Grid>
+                        <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
                         <Field xs={8} header={"Identificador"}/>
                         <Field xs={4} header={"Fecha de Emisión"}/>
                         <Field xs={12} header={"Nombre Completo del Paciente"}/>
