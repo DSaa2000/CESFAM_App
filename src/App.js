@@ -41,12 +41,11 @@ function App() {
     });
   });
 
-  return (
-    <>
-    <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
+  return (    
+    
     <div style={{ display: 'flex', height: '100%' }}>
-      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6'}} breakPoint='sm'>        
-    <div style={{ display: 'flex', height: '100%'}}>
+      <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block'}}><BsList/></Button>
+           
       <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%'}} breakPoint='sm'>        
         <Menu>
           <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>} style={{display: !showNav ? 'none' : 'block'}}></MenuItem>
@@ -94,8 +93,6 @@ function App() {
         </Route>
       </Routes>
     </div>
-    </>
   );
 }
-
 export default App;
