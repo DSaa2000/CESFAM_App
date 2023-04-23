@@ -1,9 +1,9 @@
 import React from "react";
-import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button } from "@mui/material";
+import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Modal } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const _spacing = 2;
 
@@ -77,7 +77,10 @@ const Prescripciones = () => {
     const Item = (props) => {
     return(
         <>
-        <ListItem key={props.key} onClick={() => setTitle(props.number)}>
+        <ListItem key={props.key} onClick={() => {
+                setTitle(props.number); 
+                if (hide === true) handleOpen();
+            }}>
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -96,6 +99,28 @@ const Prescripciones = () => {
 }
     const [query, setQuery] = useState('');
     const [title, setTitle] = useState('P0');
+    const [hide, setHide] = useState(false);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const _md = 900; // Default md size
+
+    const changeNavState = (sm) => {
+        const _show = window.innerWidth > sm ? false : true;
+        setHide(_show);
+        if (_show === false) handleClose();
+    }
+
+    window.onload = () => {
+        changeNavState(_md);
+    };
+    
+    useEffect(() => {
+    window.addEventListener('resize', () => {
+        changeNavState(_md);
+    });
+    });
 
     const handleQuery = (e) => {
         setQuery(e.target.value);
@@ -105,7 +130,7 @@ const Prescripciones = () => {
         <Box sx={{ flexGrow: 1}}>
             <Grid container spacing={_spacing}>
                 {/* Listado de items */}
-                <Grid item xs={3}>
+                <Grid item xs={12} sm={4}>
                     <List sx={{
                         maxHeight: "100vh",
                         overflowY: "scroll",
@@ -119,8 +144,8 @@ const Prescripciones = () => {
                     </List>
                 </Grid>
                 {/* Medicamentos */}
-                <Grid item xs={9} p={_spacing}>
-                    <Grid container spacing={_spacing}>
+                <Grid item xs={12} sm={8} p={_spacing} >
+                    <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'block'}}>
                         <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
                         <Field xs={8} header={"Identificador"}/>
                         <Field xs={4} header={"Fecha de Emisión"}/>
@@ -196,6 +221,66 @@ const Prescripciones = () => {
                         </Grid>
                     </Grid>
                 </Grid>
+                {/* Medicamentos modal */}
+                <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                    <Paper sx={{width: '100%', height: '100%', backgroundColor: "#FEFBF6", display: "flex", justifyContent: 'center', alignItems: 'center'}}>
+                        <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'block' : 'none', overflowY: 'scroll', height: '100vh'}}>
+                        <Button variant='contained' onClick={handleClose}>X</Button>
+                            <Grid item xs={12} p={_spacing}>
+                                <Grid container spacing={_spacing}>
+                                    <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
+                                    <Field xs={12} header={"Identificador"}/>
+                                    <Field xs={12} header={"Fecha de Emisión"}/>
+                                    <Field xs={12} header={"Nombre Completo del Paciente"}/>
+                                    <Field xs={12} header={"RUN"}/>
+                                    <Field xs={12} header={"Fecha de Nacimiento"}/>
+                                    <Field xs={12} header={"Edad"}/>
+                                    <Grid item xs={12}>
+                                        <Title>Prescripción</Title>
+                                        <Grid container spacing={_spacing}>
+                                            <Grid item xs={12}>
+                                                {medicamentos.map(medicamento => {
+                                                    return (
+                                                        <>
+                                                            <CustomBox style={{height: "2em", display: "flex", alignItems: "center", marginTop: '.5em'}}>
+                                                                <p><b>Medicamento</b></p>
+                                                            </CustomBox>
+                                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
+                                                                <p>{medicamento.name}</p>
+                                                            </CustomBox>
+                                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
+                                                                <p>Cantidad: {medicamento.amount}</p>
+                                                            </CustomBox>
+                                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
+                                                                Stock: {medicamento.stock ? <CheckIcon/> : <CloseIcon/>}
+                                                            </CustomBox>
+                                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
+                                                                <p>Estado: {medicamento.state}</p>
+                                                            </CustomBox>
+                                                        </>
+                                                    )
+                                                })}
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <p>
+                                            <b>Dr. Federico Santa María</b><br></br>
+                                            RUN 11.111.111-1<br></br>
+                                            Especialidad: Médico Cirujano
+                                        </p>
+                                    </Grid>
+                                    <Grid item xs={12}></Grid>
+                                    <Grid item xs={12}>
+                                        <Title>Estado</Title>
+                                        <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>Parcial</CustomBox>
+                                        <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em"}}>Finalizar entrega</Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                </Modal>
             </Grid>
         </Box>
     )
