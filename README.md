@@ -18,13 +18,14 @@ npm install
 ```
 
 
-## Ejecutando las pruebas
+## Inicializar la app
 
 Para iniciar la app web ejecutar
 
 ```
 npm start
 ```
+Esto abrirá el navegador web de preferencia con la aplicación ya abierta.
 
 ## Consideraciones
 
