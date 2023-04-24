@@ -29,7 +29,8 @@ Esto abrirá el navegador web de preferencia con la aplicación ya abierta.
 
 ## Consideraciones
 
-De momento tomamos al médico y al farmacéutico como uno solo para la simpleza del prototipado.
-Se incluye el navbar en todas las instancias para facilitar la movilidad dentro de la app.
+-De momento tomamos al médico y al farmacéutico como uno solo para la simpleza del prototipado.
 
-En reserva de medicamentos el signo "+" abre un modal
+-Se incluye el navbar en todas las instancias para facilitar la movilidad dentro de la app.
+
+-En reserva de medicamentos el signo "+" abre un modal
