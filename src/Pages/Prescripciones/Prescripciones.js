@@ -137,7 +137,7 @@ const Prescripciones = () => {
         if(window.innerWidth < _lg) {
             setHide(true);
         }
-    });
+    },[]);
 
     const handleQuery = (e) => {
         setQuery(e.target.value);
@@ -234,7 +234,8 @@ const Prescripciones = () => {
                         <Grid item xs={4}>
                             <Title>Estado</Title>
                             <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>Parcial</CustomBox>
-                            <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em"}}>Finalizar entrega</Button>
+                            
+                            <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em", backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Finalizar entrega</Button>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -242,7 +243,7 @@ const Prescripciones = () => {
                 <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
                     <Paper sx={{width: '100%', height: '100%', backgroundColor: "#FEFBF6", display: "flex", justifyContent: 'center', alignItems: 'center'}}>
                         <Grid item xs={12} md={8} p={_spacing} style={{display: hide ? 'inherith' : 'none', overflowY: 'scroll', height: '100vh'}}>
-                            <Button variant='contained' onClick={handleClose}>X</Button>
+                            <Button variant='contained' sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={handleClose}>X</Button>
                             <Grid item xs={12} p={_spacing}>
                                 <Grid container spacing={_spacing}>
                                     <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
@@ -289,7 +290,7 @@ const Prescripciones = () => {
                                     <Grid item xs={12} sm={6}>
                                         <Title>Estado</Title>
                                         <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>Parcial</CustomBox>
-                                        <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em"}}>Finalizar entrega</Button>
+                                        <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em", backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Finalizar entrega</Button>
                                     </Grid>
                                 </Grid>
                             </Grid>

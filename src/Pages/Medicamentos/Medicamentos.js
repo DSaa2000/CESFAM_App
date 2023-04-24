@@ -131,7 +131,7 @@ const Medicamentos = () => {
         if(window.innerWidth < _md) {
             setHide(true);
         }
-    });
+    },[]);
 
     const handleQuery = (e) => {
         setQuery(e.target.value);
@@ -167,8 +167,8 @@ const Medicamentos = () => {
                         <Field xs={12} header={"Condiciones de Conservación"}/>
                         <Grid item xs={12} spacing={_spacing}>
                             <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
-                                <Button variant="contained">Editar</Button>
-                                <Button variant="contained">Registrar baja</Button>
+                                <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
+                                <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Registrar baja</Button>
                             </Stack>
                         </Grid>
                     </Grid>
@@ -177,7 +177,7 @@ const Medicamentos = () => {
                 <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
                     <Paper sx={{width: '100%', height: '100%', backgroundColor: "#FEFBF6", display: "flex", justifyContent: 'center', alignItems: 'center'}}>
                         <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'block' : 'none', overflowY: 'scroll', height: '100vh'}}>
-                            <Button variant='contained' onClick={handleClose}>X</Button>
+                            <Button variant='contained' sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={handleClose}>X</Button>
                             <Grid container spacing={_spacing}>
                                 <Grid item xs={12}><h1>Medicamento</h1></Grid>
                                 <Field xs={12} sm={6} header={"Nombre Medicamento"}/>
@@ -189,8 +189,8 @@ const Medicamentos = () => {
                                 <Field xs={12} sm={12} header={"Condiciones de Conservación"}/>
                                 <Grid item xs={12} spacing={_spacing}>
                                     <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
-                                        <Button variant="contained">Editar</Button>
-                                        <Button variant="contained">Registrar baja</Button>
+                                        <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
+                                        <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Registrar baja</Button>
                                     </Stack>
                                 </Grid>
                             </Grid>

@@ -365,8 +365,8 @@ export default function MedicamentosReservados () {
                     </Grid>
                     <Grid item xs={12} spacing={2}>
                       <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
-                          <Button variant="contained" onClick={handleClose}>Cancelar</Button>
-                          <Button variant="contained">Agregar</Button>
+                          <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={handleClose}>Cancelar</Button>
+                          <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Agregar</Button>
                       </Stack>
                     </Grid>
                   </Grid>
@@ -375,35 +375,6 @@ export default function MedicamentosReservados () {
             </Grid>
             <Grid item xs={12} sm={6} md={1}>
               <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none', width:'100%'}}><FilterAltIcon /></Button>
-              <Modal open={open2} onClose={handleCloseFilter} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                  <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)"}}>
-                    <Paper sx={{background:"Blue"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Seleccionar Filtrosn
-                    </Typography>
-                    </Paper>
-                    <Grid container spacing={2} sx={{padding:"1em"}}>
-                      <Grid item xs={10}>
-                      <Field header={"Medicamento"} placeholder={'hola'}></Field>
-                      </Grid>
-                      <Grid item xs={2}>
-                      <Field header={"Cantidad"}></Field>
-                      </Grid>
-                      <Grid item xs={12}>
-                      <Field header={"Rut Paciente"}></Field>
-                      </Grid>
-                      <Grid item xs={12}>
-                      <Field header={"Prescripcion"}></Field>
-                      </Grid>
-                      <Grid item xs={12} spacing={2}>
-                        <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
-                            <Button variant="contained" onClick={handleCloseFilter}>Cancelar</Button>
-                            <Button variant="contained">Agregar</Button>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </Paper>
-              </Modal>
             </Grid>
           </Grid>
         </div>
@@ -446,6 +417,6 @@ export default function MedicamentosReservados () {
             </Paper>
         </Box>
 
-        <Button style={{display: 'flex', float: 'right'}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
+        <Button style={{display: 'flex', float: 'right', backgroundColor: "#A6D1E6", color: "#2C2C2F"}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
     </Paper>);
 }

@@ -38,32 +38,13 @@ const CustomBox = ({ children, style }) => {
 
 const Field = (props) => {
     return (
-        <Grid item xs={props.xs} md={props.md}>
+        <Grid item xs={props.xs} sm={props.sm} md={props.md}>
             <Title>{props.header}</Title>
             <CustomBox>
-                <InputBase sx={{width: "100%"}}/>
+                <InputBase sx={{width: "100%"}} placeholder={props.placeholder}/>
             </CustomBox>
         </Grid>
     )
-}
-
-const SearchBar = (props) => {
-    return (
-        <div style={{
-            background: "#A6D1E6",
-            color: "black",
-            display: "flex",
-            alignItems: "center",
-            gap: ".5em",
-            paddingLeft: "1em",
-        }}>
-            <SearchIcon />
-            <InputBase
-                placeholder={props.placeholder}
-                onChange={props.handleQuery}
-            />
-        </div>
-    );
 }
 
 const medicamentos = [
@@ -73,123 +54,52 @@ const medicamentos = [
 ];
 
 const Prescripciones = () => {
-    const s = (e,number) => {
-        if (hide === true) handleOpen();
-        let x = document.getElementsByClassName('itemSelected');
-        for (let i = 0; i< x.length; i++) {
-            x[i].classList.remove('itemSelected');
-        }
-        if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
-        else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.parentNode.className = 'test itemSelected';
-
-        //setTitle(number); 
-    };
-    const Item = (props) => {
-    return(
-        <div  onClick={(e) => s(e,props.number)} className="test">
-        <ListItem key={props.key}>
-            <ListItemText
-                primary={props.number}
-                primaryTypographyProps={{
-                    color: "grey",
-                }}
-                secondary={props.text}
-                secondaryTypographyProps={{
-                    color: "black",
-                    fontWeight: "bold"
-                }}
-            />
-        </ListItem>
-        <Divider/>
-        </div>
-    );
-}
-    const [query, setQuery] = useState('');
-    const [hide, setHide] = useState(false);
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-
-    const _lg = 1200; // Default lg size
-
-    const changeNavState = (sm) => {
-        const _show = window.innerWidth > sm ? false : true;
-        setHide(_show);
-        if (_show === false) handleClose();
-        console.log(hide);
-    }
-
-    window.onload = () => {
-        changeNavState(_lg);
-    };
-    
-    useEffect(() => {
-        window.addEventListener('resize', () => {
-            changeNavState(_lg);
-        });
-
-        if(window.innerWidth < _lg) {
-            setHide(true);
-        }
-    });
-
-    const handleQuery = (e) => {
-        setQuery(e.target.value);
-    }
 
     return (
         <Box sx={{ flexGrow: 1}}>
                 <Grid item xs={12} lg={8} p={_spacing} >
-                    <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'inherith'}}>
+                    <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Receta Médica Electrónica</h1></Grid>
-                        <Field xs={6} header={"Identificador"}/>
-                        <Field xs={6} header={"Fecha de Emisión"}/>
+                        <Field xs={12} sm={6} header={"Identificador"}/>
+                        <Field xs={12} sm={6} header={"Fecha de Emisión"}/>
                         <Field xs={12} header={"Nombre Completo del Paciente"}/>
-                        <Field xs={6} header={"RUN"}/>
-                        <Field xs={6} header={"Fecha de Nacimiento"}/>
+                        <Field xs={12} sm={6} header={"RUN"}/>
+                        <Field xs={12} sm={6} header={"Fecha de Nacimiento"}/>
                         <Field xs={12} header={"Edad"}/>
                         <Grid item xs={12}>
                             <Title>Prescripción</Title>
                             <Grid container spacing={_spacing}>
-                                <Grid item xs={10}>
+                                <Grid item xs={12}>
                                     <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
                                         <p><b>Medicamento</b></p>
                                     </CustomBox>
-                                    {medicamentos.map(medicamento => {
-                                        return (
-                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <Field  />
-                                            </CustomBox>
-                                        )
-                                    })}
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Cantidad</b></p>
-                                    </CustomBox>
-                                    {medicamentos.map(medicamento => {
-                                        return (
-                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <Field  />
-                                            </CustomBox>
-                                        )
-                                    })}
+                                    <Grid container spacing={2}>
+                                        {medicamentos.map(medicamento => {
+                                            return (
+                                                <Grid item xs={12} sm={6} md={4}>
+                                                    <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
+                                                        <Field placeholder="medicamento"/>
+                                                    </CustomBox>
+                                                    <CustomBox style={{height: "2em", margin: ".2em 0 0 0", display: "flex", alignItems: "center"}}>
+                                                        <Field  placeholder="cantidad"/>
+                                                    </CustomBox>
+                                                </Grid>
+                                            )
+                                        })}
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={12} md={5}>
                             <p>
                                 <b>Dr. Federico Santa María</b><br></br>
                                 RUN 11.111.111-1<br></br>
                                 Especialidad: Médico Cirujano
                             </p>
                         </Grid>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={2}>
-                            <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em"}}>Emitir</Button>
+                        <Grid item xs={12} md={1}></Grid>
+                        <Grid item xs={12} md={6}>
+                            <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em", backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Emitir</Button>
                         </Grid>
                     </Grid>
                 </Grid>

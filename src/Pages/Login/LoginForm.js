@@ -49,7 +49,7 @@ function LoginForm() {
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </div>
-              <button type="submit" className="login-form-button" >Entrar</button>
+              <button type="submit" className="login-form-button">Entrar</button>
               <div className="login-or-divider">
               </div>
               <a href="/" className="login-forgot-password-link">¿Olvido su contraseña?</a>

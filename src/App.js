@@ -54,20 +54,19 @@ function App() {
     }
 
     setHome(getLocation.pathname === '/');
-  });
+  },[]);
 
   return (    
     <>
-    <Button onClick={() => toggleSidebar()} style={{display: (showNav || home) ? 'none' : 'block'}}><BsList/></Button>
+    <Button onClick={() => toggleSidebar()} style={{display: showNav ? 'none' : 'block', color: "#2C2C2F"}}><BsList/></Button>
     <div style={{ display: 'flex', height: '100%' }}>
            
-      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%', display: home ? 'none' : 'block'}} breakPoint='sm'>        
+      <Sidebar style={{color: 'black', backgroundColor: '#FEFBF6', height: '100%'}} breakPoint='sm'>        
         <Menu>
           <MenuItem onClick={() => collapseSidebar()} icon={<BsList/>} style={{display: !showNav ? 'none' : 'block'}}></MenuItem>
           <MenuItem component={<Link to="/" />} icon={<BsFillHouseFill/>}>Login</MenuItem>
           <SubMenu label="Inventario" icon={<MdInventory/>}>
             <MenuItem component={<Link to="/medicamentos" />}>Listado Medicamentos </MenuItem>
-            <MenuItem> Agregar Inventario </MenuItem>
             <MenuItem component={<Link to="/Inventario/Reportes" />}> Generar Reporte Stock</MenuItem>
           </SubMenu>
           <SubMenu label="Prescripciones" icon={<FaNotesMedical/>}>
@@ -76,8 +75,7 @@ function App() {
           <SubMenu label="Reservar Medicamentos" icon={<VscChecklist/>}>            
             <MenuItem component={<Link to="/ReservaMedicamentos/List" />}> Reserva de Medicamentos </MenuItem>
           </SubMenu>
-          <SubMenu label="Entrega Medicamentos" icon={<CgLoadbarDoc/>}>
-          </SubMenu>
+          <MenuItem component={<Link to="/RecetaMedica"/>} icon={<CgLoadbarDoc/>}>Receta Medica</MenuItem>
         </Menu>
       </Sidebar>
       <main>
