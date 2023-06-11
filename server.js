@@ -4,6 +4,7 @@ const {ObjectId} = require('mongodb');
 const express = require('express');
 const mongoose = require('mongoose');
 const { ApolloServer, gql } = require('apollo-server-express');
+
 const Usuario = require('./models/Usuario');
 const Medicamento = require('./models/Medicamento');
 const Detalle = require('./models/Detalle');
@@ -11,10 +12,11 @@ const Prescripcion = require('./models/Prescripcion');
 const cors = require('cors');
 
 let connectionString = 'mongodb+srv://admin:1234@cluster0.uebacdc.mongodb.net/Cesfam';
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+let connectionString2 = 'mongodb+srv://admin:1234@cluster0.bshluul.mongodb.net/';
+mongoose.connect(connectionString2, { useNewUrlParser: true, useUnifiedTopology: true });
 let apolloServer = null;
 
-const typeDefs=gql`
+const typeDefs = gql`
 type Medicamento {
     id: ID!
     codigo: String!
@@ -68,6 +70,8 @@ type Query {
     getUsuarios: [Usuario]
     getUsuario(rut: String): Usuario
 
+    getPrescripcion: Prescripcion
+    getPrescripciones: [Prescripcion]
     getDetalles(prescripcion: String): [Detalle]
 }
 type Mutation {
@@ -75,8 +79,24 @@ type Mutation {
     updateMedicamento(id: ID!, input: Medicamento_Input): Medicamento
     deleteMedicamento(id: ID!): Alert
 
+    addPrescripcion(input: Prescripcion_Input): Prescripcion
+    updatePrescripcion(id: ID!, input: Prescripcion_Input): Prescripcion
     addDetalle(input: Detalle_Input): Detalle
     updateDetalle(id: ID!, input: Detalle_Input): Detalle
+}
+type Prescripcion {
+    id: ID!
+    fecha_emision: String!
+    paciente: String!
+    nombre: String!
+    medico: String!
+}
+
+input Prescripcion_Input {
+    fecha_emision: String!
+    paciente: String!
+    nombre: String!
+    medico: String!
 }
 type Alert{ 
     code: String
@@ -85,58 +105,132 @@ type Alert{
 `
 const resolvers = {
     Query: {
+        // Medicamentos
         async getMedicamentos() {
-            const medicamentos = await Medicamento.find();
-            return medicamentos;
+            try {                
+                const medicamentos = await Medicamento.find();
+                return medicamentos;
+            } catch (error) {
+                Error.log(error);
+            }
         },
         async getMedicamento(obj, {id} ) {
-            const medicamento = await Medicamento.findById(id);
-            return medicamento;
+            try {
+                const medicamento = await Medicamento.findById(id);
+                return medicamento;   
+            } catch (error) {
+                Error.log(error);
+            }
         },
+        // Usuarios
         async getUsuarios() {
-            const usuarios = await Usuario.find();
-            return usuarios;
+            try {
+                const usuarios = await Usuario.find();
+                return usuarios;
+            } catch (error) {
+                Error.log(error);
+            }
         },
         async getUsuario(obj, {rut} ) {
-            const usuario = await Usuario.findOne({rut}).exec();
-            return usuario;
+            try {
+                const usuario = await Usuario.findOne({rut}).exec();
+                return usuario;
+            } catch (error) {
+                Error.log(error);
+            }            
+        },
+        // Prescripciones
+        async getPrescripcion(obj, {id}) {
+            try {
+                const prescripcion = await Prescripcion.findById(id);
+                return prescripcion;
+            }catch (error) {
+                Error.log(error);
+            }
+        },
+        async getPrescripciones() {
+            try {
+                const lista = await Prescripcion.find();
+                return lista;
+            }catch (error) {
+                Error.log(error);
+            }
         },
         async getDetalles(obj, {prescripcion}) {
-            const detalles = await Detalle.find({prescripcion});
-            return detalles;
+            try {
+                const detalles = await Detalle.find({prescripcion});
+                return detalles;
+            } catch (error) {
+                Error.log(error);
+            }
         }
     },
     Mutation: {
+        // Medicamentos
         async addMedicamento(obj, { input }) {
-            const medicamento = new Medicamento(input);
-            await medicamento.save();
-            return medicamento;
+            try {
+                const medicamento = new Medicamento(input);
+                await medicamento.save();
+                return medicamento;                
+            } catch (error) {
+                Error.log(error);
+            }
         },
         async updateMedicamento(obj, {id, input}) {
-            const medicamento = Medicamento.findByIdAndUpdate(id, input);
-            return medicamento;
+            try {
+                const medicamento = Medicamento.findByIdAndUpdate(id, input);
+                return medicamento;                
+            } catch (error) {
+                Error.log(error);
+            }
         },
         async deleteMedicamento(obj, {id}){
-            await Medicamento.deleteOne({_id: id});
-            return {
-                message: 'Usuario Eliminado'
-            }    
+            try {
+                await Medicamento.deleteOne({_id: id});
+                return {
+                    message: 'Usuario Eliminado'
+                }   
+            } catch (error) {
+                Error.log(error);
+            }             
+        },
+        // Prescripciones
+        async addPrescripcion(obj, {input}) {
+            try {
+                const prescripcion = new Prescripcion(input);
+                await prescripcion.save();
+                return prescripcion;
+            } catch (error) {
+                Error.log(error);
+            }
+        },
+        async updatePrescripcion(obj, {id,input}) {
+            try {
+                const prescripcion = Prescripcion.findByIdAndUpdate(id,input);
+                return prescripcion;
+            } catch (error) {
+                Error.log(error);
+            }
         },
         async addDetalle(obj, { input }) {
-            const detalle = new Detalle(input);
-            await detalle.save();
-            return detalle;
+            try {
+                const detalle = new Detalle(input);
+                await detalle.save();
+                return detalle;
+            } catch (error) {
+                Error.log(error);
+            }            
         },
         async updateDetalle(obj, {id, input}) {
-            const detalle = Detalle.findByIdAndUpdate(id, input);
-            return detalle;
+            try {
+                const detalle = Detalle.findByIdAndUpdate(id, input);
+                return detalle;
+            } catch (error) {
+                Error.log(error);
+            }            
         }
-
-    },
-    Alert: {
     }
 }
-
 
 const corsOptions = {
     origin: "http://localhost:8090",
@@ -151,7 +245,7 @@ async function startServer(){
 
 startServer();
 
-const app = express();
+const app = new express();
 app.use(cors());
 app.listen(8090, function () {
     console.log("Servidor Iniciado");
