@@ -1,5 +1,5 @@
-const { ApolloServer, gql } = require('apollo-server-express');
-const typeDefs=gql`
+const { gql } = require('apollo-server-express');
+const typeDefs = gql`
 type Medicamento {
     id: ID!
     codigo: String!
@@ -31,7 +31,7 @@ type Mutation_Medicamento {
     delMedicamento(id: ID!): Alert
 }
 type Query {
-    getUsuarios(): [Usuario]
+    getUsuarios: [Usuario]
     getUsuario(id: ID!): Usuario
     
 }
@@ -58,7 +58,7 @@ type Estado {
     correo: String!
 }
 type Query_Prescripciones {
-    getPrescripciones(): [Prescripcion]
+    getPrescripciones: [Prescripcion]
     getPrescripcion(id: ID!): Prescripcion
 }
 input Prescripcion_Input {
@@ -101,4 +101,4 @@ type Mutation_Usuario {
     del Usuario(id: ID!): Alert
 }
 `
-export default{typeDefs}
+export default {typeDefs}
