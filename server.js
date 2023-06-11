@@ -1,10 +1,12 @@
-//import {typeDefs} from "./models/typedefs"
+//import {typeDefs} from "./models/typedefs"}
+const {ObjectId} = require('mongodb');
 
 const express = require('express');
 const mongoose = require('mongoose');
 const { ApolloServer, gql } = require('apollo-server-express');
 const Usuario = require('./models/Usuario');
 const Medicamento = require('./models/Medicamento');
+const Detalle = require('./models/Detalle');
 const Prescripcion = require('./models/Prescripcion');
 const cors = require('cors');
 
@@ -18,29 +20,68 @@ type Medicamento {
     codigo: String!
     nombre: String!
     laboratorio: String!
-    stock: String!
+    stock: Int!
     fecha: String!
     dosis: String!
     unidadMedida: String!
     condiciones: String!
 }
-    type Query {
-        getMedicamentos: [Medicamento]
-        getMedicamento(id: ID!): Medicamento
-    }
-    input Medicamento_Input {
-        codigo: String!
-        nombre: String!
-        laboratorio: String!
-        stock: String!
-        fecha: String!
-        dosis: String!
-        unidadMedida: String!
-        condiciones: String!
-    }
-    type Mutation {
-        addMedicamento(input: Medicamento_Input): Medicamento
-    }
+input Medicamento_Input {
+    codigo: String!
+    nombre: String!
+    laboratorio: String!
+    stock: Int!
+    fecha: String!
+    dosis: String!
+    unidadMedida: String!
+    condiciones: String!
+}
+type Usuario {
+    id: ID!
+    rol: String!
+    nombre: String!
+    rut: String!
+    fechaNacimiento: String!
+    edad:String!
+    correo: String!
+    contrasena: String!
+    telefono: String!
+    especialidad: String
+}
+type Detalle {
+    id: ID!
+    prescripcion: String!
+    medicamento: String!
+    cantidad: Int!
+    estado: String!
+}
+input Detalle_Input {
+    medicamento: String!
+    prescripcion: String!
+    cantidad: Int!
+    estado: String!
+}
+type Query {
+    getMedicamentos: [Medicamento]
+    getMedicamento(id: ID!): Medicamento
+
+    getUsuarios: [Usuario]
+    getUsuario(rut: String): Usuario
+
+    getDetalles(prescripcion: String): [Detalle]
+}
+type Mutation {
+    addMedicamento(input: Medicamento_Input): Medicamento
+    updateMedicamento(id: ID!, input: Medicamento_Input): Medicamento
+    deleteMedicamento(id: ID!): Alert
+
+    addDetalle(input: Detalle_Input): Detalle
+    updateDetalle(id: ID!, input: Detalle_Input): Detalle
+}
+type Alert{ 
+    code: String
+    message: String
+}
 `
 const resolvers = {
     Query: {
@@ -48,9 +89,21 @@ const resolvers = {
             const medicamentos = await Medicamento.find();
             return medicamentos;
         },
-        async getMedicamento({ id }) {
+        async getMedicamento(obj, {id} ) {
             const medicamento = await Medicamento.findById(id);
             return medicamento;
+        },
+        async getUsuarios() {
+            const usuarios = await Usuario.find();
+            return usuarios;
+        },
+        async getUsuario(obj, {rut} ) {
+            const usuario = await Usuario.findOne({rut}).exec();
+            return usuario;
+        },
+        async getDetalles(obj, {prescripcion}) {
+            const detalles = await Detalle.find({prescripcion});
+            return detalles;
         }
     },
     Mutation: {
@@ -58,21 +111,29 @@ const resolvers = {
             const medicamento = new Medicamento(input);
             await medicamento.save();
             return medicamento;
-        }//,
-        /*async updateMedicamento(obj, {id, input}) {
-            const medicamento = Medicamento.findByIdAndUpdate({ id: id, input: input });
-            await medicamento.save();
+        },
+        async updateMedicamento(obj, {id, input}) {
+            const medicamento = Medicamento.findByIdAndUpdate(id, input);
             return medicamento;
         },
         async deleteMedicamento(obj, {id}){
-            await medicamento.deleteOne({__id: id});
+            await Medicamento.deleteOne({_id: id});
             return {
                 message: 'Usuario Eliminado'
             }    
+        },
+        async addDetalle(obj, { input }) {
+            const detalle = new Detalle(input);
+            await detalle.save();
+            return detalle;
+        },
+        async updateDetalle(obj, {id, input}) {
+            const detalle = Detalle.findByIdAndUpdate(id, input);
+            return detalle;
         }
+
     },
     Alert: {
-*/
     }
 }
 

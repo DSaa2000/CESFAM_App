@@ -51,7 +51,7 @@ type Detalle {
     id: ID!
     medicamento: String!
     cantidad: Int!
-    estado: Estado
+    estado: String!
 }
 type Estado {
     id: ID!

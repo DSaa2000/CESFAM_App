@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 const usuarioSchema = new mongoose.Schema(
     {
-        correo: String,
+        id: String,
+        rol: String,
         nombre: String,
-        rol: String,//Rol
+        fechaNacimiento: String,
+        correo: String,
         contrasena: String,
         rut: String,
-        telefono: String
+        edad:String,
+        telefono: String,
+        especialidad: String
     }
 );
 
