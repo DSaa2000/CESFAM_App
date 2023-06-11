@@ -8,8 +8,8 @@ const Medicamento = require('./models/Medicamento');
 const Prescripcion = require('./models/Prescripcion');
 const cors = require('cors');
 
-let connectionString = 'mongodb+srv://admin:1234@cluster0.uebacdc.mongodb.net/';
-mongoose.connect(connectionString, { useNewUrlParse: true, useUnifiedTopology: true });
+let connectionString = 'mongodb+srv://admin:1234@cluster0.uebacdc.mongodb.net/Cesfam';
+mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
 let apolloServer = null;
 
 const typeDefs=gql`
@@ -25,9 +25,23 @@ type Medicamento {
     condiciones: String!
 }
     type Query {
-        getMedicamentos(): [Medicamento]
+        getMedicamentos: [Medicamento]
         getMedicamento(id: ID!): Medicamento
-    }`
+    }
+    input Medicamento_Input {
+        codigo: String!
+        nombre: String!
+        laboratorio: String!
+        stock: String!
+        fecha: String!
+        dosis: String!
+        unidadMedida: String!
+        condiciones: String!
+    }
+    type Mutation {
+        addMedicamento(input: Medicamento_Input): Medicamento
+    }
+`
 const resolvers = {
     Query: {
         async getMedicamentos() {
@@ -38,14 +52,14 @@ const resolvers = {
             const medicamento = await Medicamento.findById(id);
             return medicamento;
         }
-    }//,
-    /*Mutations: {
+    },
+    Mutation: {
         async addMedicamento(obj, { input }) {
             const medicamento = new Medicamento(input);
             await medicamento.save();
             return medicamento;
-        },
-        async updateMedicamento(obj, {id, input}) {
+        }//,
+        /*async updateMedicamento(obj, {id, input}) {
             const medicamento = Medicamento.findByIdAndUpdate({ id: id, input: input });
             await medicamento.save();
             return medicamento;
@@ -58,8 +72,8 @@ const resolvers = {
         }
     },
     Alert: {
-
-    }*/
+*/
+    }
 }
 
 
