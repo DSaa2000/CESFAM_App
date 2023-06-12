@@ -88,14 +88,12 @@ type Prescripcion {
     id: ID!
     fecha_emision: String!
     paciente: String!
-    nombre: String!
     medico: String!
 }
 
 input Prescripcion_Input {
     fecha_emision: String!
     paciente: String!
-    nombre: String!
     medico: String!
 }
 type Alert{ 
