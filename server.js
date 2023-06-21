@@ -11,8 +11,8 @@ const Detalle = require('./models/Detalle');
 const Prescripcion = require('./models/Prescripcion');
 const cors = require('cors');
 
-let connectionString = 'mongodb+srv://admin:1234@cluster0.uebacdc.mongodb.net/Cesfam';
-let connectionString2 = 'mongodb+srv://admin:1234@cluster0.bshluul.mongodb.net/';
+let connectionString2 = 'mongodb+srv://admin:1234@cluster0.uebacdc.mongodb.net/Cesfam';
+let connectionString = 'mongodb+srv://admin:1234@cluster0.bshluul.mongodb.net/';
 mongoose.connect(connectionString2, { useNewUrlParser: true, useUnifiedTopology: true });
 let apolloServer = null;
 

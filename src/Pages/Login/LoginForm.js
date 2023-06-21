@@ -12,8 +12,26 @@ function LoginForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(`Email: ${email} Password: ${password}`);
+    //const data = { query: "query getUsuarios{}" };
+    //fetch("http://localhost:8090/graphql?query=query getUsuario($rut: String){getUsuario(rut: $rut){correo} }&rut=String2").then(response=>response.json().then(data=>console.log(data)));
+    const data = {
+      "query": "query GetUsuario ($rut: String) {getUsuario(rut: $rut){contrasena}}",
+      "operationName": "GetUsuario",
+      "variables":   { "rut": email}
+    }
+    fetch("http://localhost:8090/graphql", {
+      method: 'POST',
+      headers: {
+        "Content-Type":"application/json",
+      },
+      body: JSON.stringify(data)
+    }).then(response=>response.json()).then(data=>{
+      if(password===data.data.getUsuario.contrasena){
+        navigate("/medicamentos");
+      }
+    });
     // Aquí puedes agregar la lógica para enviar los datos de inicio de sesión al servidor
-    navigate("/medicamentos");
+    
   };
 
   return (
@@ -32,7 +50,7 @@ function LoginForm() {
               <div className="login-form-group">
                 <label htmlFor="email">Email</label>
                 <input
-                  type="email"
+                  type="text"
                   id="email"
                   className="login-form-input"
                   value={email}

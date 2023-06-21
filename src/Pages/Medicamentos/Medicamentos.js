@@ -7,17 +7,19 @@ import { useState, useEffect } from "react";
 
 const _spacing = 2;
 
-const getItems = (number) => {
+const getItems = () => {
     const items = [];
-    for(let i=0; i < number; i++){
-        items.push(
-            {
-                number: "P"+i,
-                text: "Lorem ipsum is simply dummy text",
-                key: i
-            }
-        );
-    }
+    fetch("http://localhost:8090/graphql?query=query GetMedicamentos{getMedicamentos{codigo condiciones dosis fecha laboratorio nombre stock unidadMedida}}").then(response=>response.json().then(data=>{
+        for(let i=0; i < data.data.getMedicamentos.length; i++){
+            items.push(
+                {
+                    number: data.data.getMedicamentos[i].codigo,
+                    text: data.data.getMedicamentos[i].nombre,
+                    key: i
+                }
+            );
+        }
+    }));
     return items;
 }
 
@@ -151,7 +153,7 @@ const Medicamentos = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Lista de inventario</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} text={item.text}/>)}
+                        {itemsList.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase()) || item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} text={item.text}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
