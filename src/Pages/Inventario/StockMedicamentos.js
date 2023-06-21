@@ -354,7 +354,6 @@ export default function StockMedicamentos () {
                 <TablePagination rowsPerPageOptions={[5, 10, 25]} component="div" count={rows.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage}/>
             </Paper>
         </Box>
-
-        <Button style={{display: 'flex', float: 'right'}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
+        <Button style={{display: 'flex', float: 'right', backgroundColor: "#A6D1E6", color: "#2C2C2F"}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
     </Paper>);
 }

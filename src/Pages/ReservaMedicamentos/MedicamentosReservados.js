@@ -1,9 +1,13 @@
 import * as React from 'react';
 
 import PropTypes from 'prop-types';
-
+import { Grid , Stack} from "@mui/material";
 import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
+
+import { Modal } from '@mui/material';
+
+
 
 // Components
 import Box from '@mui/material/Box';
@@ -32,6 +36,32 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import SearchIcon from '@mui/icons-material/Search';
+import { blue } from '@mui/material/colors';
+
+const Title = ({ children }) => {
+  return (
+      <p style={{fontWeight: "bold", margin: 0}}>{children}</p>
+  );
+}
+
+const CustomBox = ({ children, style }) => {
+  return (
+      <Paper sx={{padding: "0 1em", boxSizing: "content-box", background: "#F4EEE5", ...style}} elevation={0}>
+          {children}
+      </Paper>
+  );
+}
+
+const Field = (props) => {
+  return (
+      <Grid item xs={props.xs}>
+          <Title>{props.header}</Title>
+          <CustomBox>
+              <InputBase sx={{width: "100%"}} placeholder={props.placeholder}/>
+          </CustomBox>
+      </Grid>
+  )
+}
 
 function createData(code, name, lab, reserva,fecha,icon) {
     return { code, name, lab, reserva, fecha,icon };
@@ -275,7 +305,6 @@ export default function MedicamentosReservados () {
       setRowsPerPage(updatedRowsPerPage);
 
       setPage(0);
-
       const sortedRows = stableSort(rows, getComparator(order, orderBy));
       const updatedRows = sortedRows.slice(
         0 * updatedRowsPerPage,
@@ -291,21 +320,63 @@ export default function MedicamentosReservados () {
   );
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
-
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [open2, setOpenFilter] = React.useState(false);
+  const handleOpenFilter = () => setOpenFilter(true);
+  const handleCloseFilter = () => setOpenFilter(false);
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{margin: '20px', padding: '20px'}}>
     
         <h1>Reserva de Medicamentos</h1>
         
         <div style={{marginBottom: '20px', color: 'black', borderRadius: '5px', display: 'inline-flex',width: '100%'}}>
-            <Button variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none' }}><FilterAltIcon /></Button>
-            <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', marginRight: '10px'}}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={10}>
+            <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', display: 'flex'}}>
                 <IconButton type="button" sx={{ p: '10px' }} aria-label="search" >
                     <SearchIcon />
                 </IconButton>
                 <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Buscar..." inputProps={{ 'aria-label': 'Buscar...' }}  />
             </div>
-            <Button variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none' }}><AddIcon /></Button>
+            </Grid>
+            <Grid item xs={12} sm={6} md={1}>
+              <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none',  width:'100%'}}><AddIcon /></Button>
+              <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)",backgroundColor: "#FEFBF6"}}>
+                  <Paper sx={{background:"#F4EEE5", padding: '1em'}} elevation={'0'}>
+                  <Typography id="modal-modal-title" variant="h6" component="h2">
+                      <b>Agregar Medicamento</b>
+                  </Typography>
+                  </Paper>
+                  <Grid container spacing={2} sx={{padding:"1em"}}>
+                    <Grid item xs={10}>
+                      <Field header={"Medicamento"} placeholder='Ingrese medicamento...'></Field>
+                    </Grid>
+                    <Grid item xs={2}>
+                    <Field header={"Cantidad"} placeholder='0'></Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                    <Field header={"RUT Paciente"} placeholder='Ingrese RUT...'></Field>
+                    </Grid>
+                    <Grid item xs={12}>
+                    <Field header={"Prescripción"} placeholder='Ingrese Prescripción'></Field>
+                    </Grid>
+                    <Grid item xs={12} spacing={2}>
+                      <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
+                          <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={handleClose}>Cancelar</Button>
+                          <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Agregar</Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              </Modal>
+            </Grid>
+            <Grid item xs={12} sm={6} md={1}>
+              <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none', width:'100%'}}><FilterAltIcon /></Button>
+            </Grid>
+          </Grid>
         </div>
         
         <Box sx={{ width: '100%' }}>
@@ -346,6 +417,6 @@ export default function MedicamentosReservados () {
             </Paper>
         </Box>
 
-        <Button style={{display: 'flex', float: 'right'}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
+        <Button style={{display: 'flex', float: 'right', backgroundColor: "#A6D1E6", color: "#2C2C2F"}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
     </Paper>);
 }
