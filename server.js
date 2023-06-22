@@ -9,7 +9,9 @@ const Usuario = require('./models/Usuario');
 const Medicamento = require('./models/Medicamento');
 const Detalle = require('./models/Detalle');
 const Prescripcion = require('./models/Prescripcion');
+const Reserva = require('./models/ReservaMedicamento');
 const cors = require('cors');
+const ReservaMedicamento = require('./models/ReservaMedicamento');
 
 let connectionString2 = 'mongodb+srv://admin:1234@cluster0.uebacdc.mongodb.net/Cesfam';
 let connectionString = 'mongodb+srv://admin:1234@cluster0.bshluul.mongodb.net/';
@@ -17,6 +19,21 @@ mongoose.connect(connectionString2, { useNewUrlParser: true, useUnifiedTopology:
 let apolloServer = null;
 
 const typeDefs = gql`
+type Reserva {
+    id: ID!
+    codigo: String!
+    nombreMedicamento: String!
+    laboratorio: String!
+    cantidadReservada: Int!
+    fechaLlegada: String!
+}
+input Reserva_Input {
+    codigo: String!
+    nombreMedicamento: String!
+    laboratorio: String!
+    cantidadReservada: Int!
+    fechaLlegada: String!
+}
 type Medicamento {
     id: ID!
     codigo: String!
@@ -64,6 +81,8 @@ input Detalle_Input {
     estado: String!
 }
 type Query {
+    getReservas: [Reserva]
+
     getMedicamentos: [Medicamento]
     getMedicamento(id: ID!): Medicamento
 
@@ -75,6 +94,8 @@ type Query {
     getDetalles(prescripcion: String): [Detalle]
 }
 type Mutation {
+    addReserva(input: Reserva_Input): Reserva
+
     addMedicamento(input: Medicamento_Input): Medicamento
     updateMedicamento(id: ID!, input: Medicamento_Input): Medicamento
     deleteMedicamento(id: ID!): Alert
@@ -103,6 +124,15 @@ type Alert{
 `
 const resolvers = {
     Query: {
+        // Reservas
+        async getReservas() {
+            try {                
+                const reservas = await ReservaMedicamento.find();
+                return reservas;
+            } catch (error) {
+                Error.log(error);
+            }
+        },
         // Medicamentos
         async getMedicamentos() {
             try {                
@@ -164,6 +194,16 @@ const resolvers = {
         }
     },
     Mutation: {
+        // Reserva
+        async addReserva(obj, { input }) {
+            try {
+                const reserva = new ReservaMedicamento(input);
+                await reserva.save();
+                return reserva;                
+            } catch (error) {
+                Error.log(error);
+            }
+        },
         // Medicamentos
         async addMedicamento(obj, { input }) {
             try {
