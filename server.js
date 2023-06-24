@@ -35,7 +35,7 @@ input Reserva_Input {
     fechaLlegada: String!
 }
 type Medicamento {
-    id: ID!
+    _id: ID!
     codigo: String!
     nombre: String!
     laboratorio: String!

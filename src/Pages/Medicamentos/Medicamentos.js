@@ -9,12 +9,21 @@ const _spacing = 2;
 
 const getItems = () => {
     const items = [];
-    fetch("http://localhost:8090/graphql?query=query GetMedicamentos{getMedicamentos{codigo condiciones dosis fecha laboratorio nombre stock unidadMedida}}").then(response=>response.json().then(data=>{
+    fetch("http://localhost:8090/graphql?query=query GetMedicamentos{getMedicamentos{ _id codigo condiciones dosis fecha laboratorio nombre stock unidadMedida}}").then(response=>response.json().then(data=>{
+        console.log(data.data.getMedicamentos);
+
         for(let i=0; i < data.data.getMedicamentos.length; i++){
             items.push(
                 {
+                    id: data.data.getMedicamentos[i]._id,
                     number: data.data.getMedicamentos[i].codigo,
                     text: data.data.getMedicamentos[i].nombre,
+                    laboratorio:data.data.getMedicamentos[i].laboratorio,
+                    stock:data.data.getMedicamentos[i].stock,
+                    dosis:data.data.getMedicamentos[i].dosis,
+                    unidad:data.data.getMedicamentos[i].unidadMedida,
+                    condiciones:data.data.getMedicamentos[i].condiciones,
+                    indice: i,
                     key: i
                 }
             );
@@ -44,7 +53,7 @@ const Field = (props) => {
         <Grid item xs={props.xs} sm={props.sm}>
             <Title>{props.header}</Title>
             <CustomBox>
-                <InputBase sx={{width: "100%"}}/>
+                <InputBase sx={{width: "100%"}} inputProps={{placeholder: props.defaultValue}}/>
             </CustomBox>
         </Grid>
     )
@@ -76,10 +85,8 @@ const Medicamentos = () => {
         if (hide === true) handleOpen();
         let x = document.getElementsByClassName('itemSelected');
         for (let i = 0; i< x.length; i++) {
-            console.log(x[i])
             x[i].classList.remove('itemSelected');
         }
-        console.log('Class', );
         if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
         else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
         else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
@@ -90,7 +97,9 @@ const Medicamentos = () => {
     const Item = (props) => {
     return(
         <div onClick={s} className="test">
-        <ListItem key={props.key}  >
+        <ListItem key={props.indice} onClick={(e)=>{
+            setIndice(props.indice);
+            }} >
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -110,6 +119,10 @@ const Medicamentos = () => {
     const [query, setQuery] = useState('');
     const [hide, setHide] = useState(false);
     const [open, setOpen] = useState(false);
+    const [indice,setIndice] =useState(0);
+    useEffect(()=>{
+        console.log(indice);
+    },[indice])
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -119,7 +132,6 @@ const Medicamentos = () => {
         const _show = window.innerWidth > sm ? false : true;
         setHide(_show);
         if (_show === false) handleClose();
-        console.log("Change");
     }
 
     window.onload = () => {
@@ -153,23 +165,25 @@ const Medicamentos = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Lista de inventario</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase()) || item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} text={item.text}/>)}
+                        {itemsList.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase()) || item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} indice={item.indice} text={item.text}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
                 <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
-                        <Field xs={8} header={"Nombre Medicamento"}/>
-                        <Field xs={4} header={"Codigo"}/>
-                        <Field xs={12} header={"Laboratorio"}/>
-                        <Field xs={4} header={"Cantidad en Stock"}/>
-                        <Field xs={4} header={"Dosis"}/>
-                        <Field xs={4} header={"Unidad Medida"}/>
-                        <Field xs={12} header={"Condiciones de Conservación"}/>
+                        <Field xs={8} header={"Nombre Medicamento"} defaultValue={itemsList[indice]?.text}/>
+                        <Field xs={4} header={"Codigo"} defaultValue={itemsList[indice]?.number}/>
+                        <Field xs={12} header={"Laboratorio"} defaultValue={itemsList[indice]?.laboratorio}/>
+                        <Field xs={4} header={"Cantidad en Stock"} defaultValue={itemsList[indice]?.stock}/>
+                        <Field xs={4} header={"Dosis"} defaultValue={itemsList[indice]?.dosis}/>
+                        <Field xs={4} header={"Unidad Medida"} defaultValue={itemsList[indice]?.unidad}/>
+                        <Field xs={12} header={"Condiciones de Conservación"} defaultValue={itemsList[indice]?.condiciones}/>
                         <Grid item xs={12} spacing={_spacing}>
                             <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
-                                <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
+                                <Button onClick={()=>{
+                                    
+                                }} variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
                                 <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Registrar baja</Button>
                             </Stack>
                         </Grid>
