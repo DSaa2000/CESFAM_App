@@ -15,7 +15,8 @@ const getItems = () => {
                 {
                     number: data.data.getMedicamentos[i].codigo,
                     text: data.data.getMedicamentos[i].nombre,
-                    key: i
+                    key: i,
+                    indice: i
                 }
             );
         }
@@ -90,7 +91,7 @@ const Medicamentos = () => {
     const Item = (props) => {
     return(
         <div onClick={s} className="test">
-        <ListItem key={props.key}  >
+        <ListItem key={props.key} onClick={() => setIndice(props.indice)}>
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -112,8 +113,15 @@ const Medicamentos = () => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [indice,setIndice] = useState(-1);
+    const [medicamentoNombre,setMedicamentoNombre] = useState(null);
 
     const _md = 900; // Default md size
+
+    useEffect(() => {
+        setMedicamentoNombre(itemsList[indice]?.text);
+        console.log(indice, medicamentoNombre);
+    },[indice]);
 
     const changeNavState = (sm) => {
         const _show = window.innerWidth > sm ? false : true;
@@ -153,13 +161,19 @@ const Medicamentos = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Lista de inventario</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase()) || item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} text={item.text}/>)}
+                        {itemsList.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase()) || item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} indice={item.indice} text={item.text}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
                 <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
+                        <Grid item xs={12}>
+                            <Title>Nombre - {medicamentoNombre}</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoNombre} onChange={(e) => setMedicamentoNombre(e.target.value)}/>
+                            </CustomBox>
+                        </Grid>
                         <Field xs={8} header={"Nombre Medicamento"}/>
                         <Field xs={4} header={"Codigo"}/>
                         <Field xs={12} header={"Laboratorio"}/>
