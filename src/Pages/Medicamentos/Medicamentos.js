@@ -48,17 +48,6 @@ const CustomBox = ({ children, style }) => {
     );
 }
 
-const Field = (props) => {
-    return (
-        <Grid item xs={props.xs} sm={props.sm}>
-            <Title>{props.header}</Title>
-            <CustomBox>
-                <InputBase sx={{width: "100%"}} inputProps={{placeholder: props.defaultValue}}/>
-            </CustomBox>
-        </Grid>
-    )
-}
-
 const SearchBar = (props) => {
     
     return (
@@ -120,6 +109,7 @@ const Medicamentos = () => {
     const [hide, setHide] = useState(false);
     const [open, setOpen] = useState(false);
     const [indice,setIndice] =useState(0);
+    const [medicamentoObj,setMedicamentoObj] = useState('');
     useEffect(()=>{
         console.log(indice);
     },[indice])
@@ -150,6 +140,16 @@ const Medicamentos = () => {
     const handleQuery = (e) => {
         setQuery(e.target.value);
     }
+    const Field = (props) => {
+        return (
+            <Grid item xs={props.xs} sm={props.sm}>
+                <Title>{props.header}</Title>
+                <CustomBox>
+                    <InputBase sx={{width: "100%"}} value={medicamentoObj} onChange={((event) => setMedicamentoObj(event.target.value))} inputProps={{placeholder: props.defaultValue}}/>
+                </CustomBox>
+            </Grid>
+        )
+    }
 
     return (
         <Box sx={{ flexGrow: 1}}>
@@ -172,7 +172,8 @@ const Medicamentos = () => {
                 <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
-                        <Field xs={8} header={"Nombre Medicamento"} defaultValue={itemsList[indice]?.text}/>
+                        <p>{medicamentoObj}</p> 
+                        <Field xs={8} header={"Nombre Medicamento"}  defaultValue={itemsList[indice]?.text}/>
                         <Field xs={4} header={"Codigo"} defaultValue={itemsList[indice]?.number}/>
                         <Field xs={12} header={"Laboratorio"} defaultValue={itemsList[indice]?.laboratorio}/>
                         <Field xs={4} header={"Cantidad en Stock"} defaultValue={itemsList[indice]?.stock}/>
@@ -182,7 +183,7 @@ const Medicamentos = () => {
                         <Grid item xs={12} spacing={_spacing}>
                             <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
                                 <Button onClick={()=>{
-                                    
+
                                 }} variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
                                 <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Registrar baja</Button>
                             </Stack>
