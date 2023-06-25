@@ -114,13 +114,13 @@ const Medicamentos = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [indice,setIndice] = useState(-1);
-    const [medicamentoNombre,setMedicamentoNombre] = useState(null);
+    const [medicamentoObj,setMedicamentoObj] = useState({});
 
     const _md = 900; // Default md size
 
     useEffect(() => {
-        setMedicamentoNombre(itemsList[indice]?.text);
-        console.log(indice, medicamentoNombre);
+        setMedicamentoObj({...itemsList[indice]});
+        console.log(indice, medicamentoObj);
     },[indice]);
 
     const changeNavState = (sm) => {
@@ -168,14 +168,18 @@ const Medicamentos = () => {
                 <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
-                        <Grid item xs={12}>
-                            <Title>Nombre - {medicamentoNombre}</Title>
+                        <Grid item xs={8}>
+                            <Title>Nombre Medicamento</Title>
                             <CustomBox>
-                                <InputBase sx={{width: "100%"}} value={medicamentoNombre} onChange={(e) => setMedicamentoNombre(e.target.value)}/>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.text} onChange={(e) => setMedicamentoObj({...medicamentoObj, text: e.target.value})}/>
                             </CustomBox>
                         </Grid>
-                        <Field xs={8} header={"Nombre Medicamento"}/>
-                        <Field xs={4} header={"Codigo"}/>
+                        <Grid item xs={4}>
+                            <Title>Codigo</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.codigo} onChange={(e) => setMedicamentoObj({...medicamentoObj, codigo: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
                         <Field xs={12} header={"Laboratorio"}/>
                         <Field xs={4} header={"Cantidad en Stock"}/>
                         <Field xs={4} header={"Dosis"}/>
