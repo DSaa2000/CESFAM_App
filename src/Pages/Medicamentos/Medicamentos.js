@@ -108,15 +108,20 @@ const Medicamentos = () => {
     const [query, setQuery] = useState('');
     const [hide, setHide] = useState(false);
     const [open, setOpen] = useState(false);
-    const [indice,setIndice] =useState(0);
-    const [medicamentoObj,setMedicamentoObj] = useState('');
     useEffect(()=>{
         console.log(indice);
     },[indice])
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [indice,setIndice] = useState(-1);
+    const [medicamentoObj,setMedicamentoObj] = useState({});
 
     const _md = 900; // Default md size
+
+    useEffect(() => {
+        setMedicamentoObj({...itemsList[indice]});
+        console.log(indice, medicamentoObj);
+    },[indice]);
 
     const changeNavState = (sm) => {
         const _show = window.innerWidth > sm ? false : true;
@@ -172,14 +177,23 @@ const Medicamentos = () => {
                 <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
-                        <p>{medicamentoObj}</p> 
-                        <Field xs={8} header={"Nombre Medicamento"}  defaultValue={itemsList[indice]?.text}/>
-                        <Field xs={4} header={"Codigo"} defaultValue={itemsList[indice]?.number}/>
-                        <Field xs={12} header={"Laboratorio"} defaultValue={itemsList[indice]?.laboratorio}/>
-                        <Field xs={4} header={"Cantidad en Stock"} defaultValue={itemsList[indice]?.stock}/>
-                        <Field xs={4} header={"Dosis"} defaultValue={itemsList[indice]?.dosis}/>
-                        <Field xs={4} header={"Unidad Medida"} defaultValue={itemsList[indice]?.unidad}/>
-                        <Field xs={12} header={"Condiciones de Conservación"} defaultValue={itemsList[indice]?.condiciones}/>
+                        <Grid item xs={8}>
+                            <Title>Nombre Medicamento</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.text} onChange={(e) => setMedicamentoObj({...medicamentoObj, text: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Title>Codigo</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.codigo} onChange={(e) => setMedicamentoObj({...medicamentoObj, codigo: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Field xs={12} header={"Laboratorio"}/>
+                        <Field xs={4} header={"Cantidad en Stock"}/>
+                        <Field xs={4} header={"Dosis"}/>
+                        <Field xs={4} header={"Unidad Medida"}/>
+                        <Field xs={12} header={"Condiciones de Conservación"}/>
                         <Grid item xs={12} spacing={_spacing}>
                             <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
                                 <Button onClick={()=>{
