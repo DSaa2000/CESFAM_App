@@ -73,13 +73,13 @@ const Medicamentos = () => {
         },
         body: JSON.stringify(data)
         }).then(response=>response.json()).then(data => {
-
+            getItems();
         });
     }
 
-    const getItems = () => {
+    const getItems = async() => {
         const items = [];
-        fetch("http://localhost:8090/graphql?query=query GetMedicamentos{getMedicamentos{ _id codigo condiciones dosis fecha laboratorio nombre stock unidadMedida}}").then(response=>response.json().then(data=>{
+        await fetch("http://localhost:8090/graphql?query=query GetMedicamentos{getMedicamentos{ _id codigo condiciones dosis fecha laboratorio nombre stock unidadMedida}}").then(response=>response.json().then(data=>{
             console.log(data.data.getMedicamentos);
     
             for(let i=0; i < data.data.getMedicamentos.length; i++){
