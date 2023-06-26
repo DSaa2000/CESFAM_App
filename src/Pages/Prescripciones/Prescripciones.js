@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 
 const _spacing = 2;
 
-const getItems = (number) => {
+/* const getItems = (number) => {
     const items = [];
     for(let i=0; i < number; i++){
         items.push(
@@ -20,9 +20,9 @@ const getItems = (number) => {
         );
     }
     return items;
-}
+} */
 
-const itemsList = getItems(15);
+
 
 const Title = ({ children }) => {
     return (
@@ -43,7 +43,7 @@ const Field = (props) => {
         <Grid item xs={props.xs} md={props.md}>
             <Title>{props.header}</Title>
             <CustomBox>
-                <InputBase sx={{width: "100%"}}/>
+                <InputBase value={props.value} sx={{width: "100%"}}/>
             </CustomBox>
         </Grid>
     )
@@ -89,12 +89,49 @@ const Prescripciones = () => {
 
         //setTitle(number); 
     };
+    const [indice,setIndice] = useState(-1);
+    const [prescripcion, setPrescripcion] = useState();
+    const [prescripciones, setPrescripciones] = useState([]);
+    const [identificador, setIdentificador] = useState("abc");
+    useEffect(() => {
+        getItems()
+    },[])
+
+    useEffect(() => {
+        setPrescripcion({...prescripciones[indice]});
+    },[indice]);
+
+    const getItems = async() => {
+        const items = [];
+        await fetch("http://localhost:8090/graphql?query=query GetPrescripciones { getPrescripciones {fecha_emision id medico paciente } }").then(response=>response.json().then(data=>{
+            console.log(data.data.getPrescripciones);
+            for(let i=0; i < data.data.getPrescripciones.length; i++){
+                items.push(
+                    {
+                        id: data.data.getPrescripciones[i].id,
+                        fecha: data.data.getPrescripciones[i].fecha_emision,
+                        text: data.data.getPrescripciones[i].medico,
+                        paciente:data.data.getPrescripciones[i].paciente,
+                        key: i
+                    }
+                );
+            }
+        }));
+        setPrescripciones(items);
+    }
+    const cargarPrescripcion =(id)=>{
+        let lista = prescripciones.filter(i=>i.id===id);
+        console.log(id,lista);
+        if(lista.length>0){
+            setIdentificador(lista[0].id)
+        }
+    }
     const Item = (props) => {
-    return(
-        <div  onClick={(e) => s(e,props.number)} className="test">
+        return(
+        <div  onClick={(e) => cargarPrescripcion(props.number)} className="test">
         <ListItem key={props.key}>
             <ListItemText
-                primary={props.number}
+                primary={props.id}
                 primaryTypographyProps={{
                     color: "grey",
                 }}
@@ -157,19 +194,19 @@ const Prescripciones = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Prescripciones Médicas</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} text={item.text}/>)}
+                        {prescripciones.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.id} text={item.text}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
                 <Grid item xs={12} lg={8} p={_spacing} >
                     <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'inherith'}}>
                         <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
-                        <Field xs={6} header={"Identificador"}/>
-                        <Field xs={6} header={"Fecha de Emisión"}/>
-                        <Field xs={12} header={"Nombre Completo del Paciente"}/>
-                        <Field xs={6} header={"RUN"}/>
-                        <Field xs={6} header={"Fecha de Nacimiento"}/>
-                        <Field xs={12} header={"Edad"}/>
+                        <Field xs={6} value={identificador} header={"Identificador"}/>
+                        <Field xs={6} value={identificador} header={"Fecha de Emisión"}/>
+                        <Field xs={12} value={identificador} header={"Nombre Completo del Paciente"}/>
+                        <Field xs={6} value={identificador} header={"RUN"}/>
+                        <Field xs={6} value={identificador} header={"Fecha de Nacimiento"}/>
+                        <Field xs={12} value={identificador} header={"Edad"}/>
                         <Grid item xs={12}>
                             <Title>Prescripción</Title>
                             <Grid container spacing={_spacing}>
