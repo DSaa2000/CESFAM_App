@@ -19,6 +19,15 @@ mongoose.connect(connectionString2, { useNewUrlParser: true, useUnifiedTopology:
 let apolloServer = null;
 
 const typeDefs = gql`
+type MedicamentoDosis {
+    id: ID!
+    nombre:String!
+    dosis:String!
+}
+input MedicamentoDosis_Input {
+    nombre: String!
+    dosis: String!
+}
 type Reserva {
     id: ID!
     codigo: String!
@@ -110,12 +119,15 @@ type Prescripcion {
     fecha_emision: String!
     paciente: String!
     medico: String!
+    medicamentos: [MedicamentoDosis!]
+    
 }
 
 input Prescripcion_Input {
     fecha_emision: String!
     paciente: String!
     medico: String!
+    medicamentos: [MedicamentoDosis_Input!]
 }
 type Alert{ 
     code: String
