@@ -3,7 +3,8 @@ const prescripcionSchema = new mongoose.Schema(
     {
         fecha_emision: String, //DateTime
         paciente: String,
-        medico: String
+        medico: String,
+        medicamentos: [{ nombre: String, dosis: String }]
     }
 );
 
