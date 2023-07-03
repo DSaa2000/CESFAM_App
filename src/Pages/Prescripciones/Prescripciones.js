@@ -92,7 +92,10 @@ const Prescripciones = () => {
     const [indice,setIndice] = useState(-1);
     const [prescripcion, setPrescripcion] = useState();
     const [prescripciones, setPrescripciones] = useState([]);
-    const [identificador, setIdentificador] = useState("abc");
+    const [identificador, setIdentificador] = useState("0");
+    const [paciente, setPaciente] = useState("");
+    const [fecha,setFecha] = useState("");
+    const [medicamentosPresc,setMedicamentosPresc] = useState([]);
     useEffect(() => {
         getItems()
     },[])
@@ -103,27 +106,40 @@ const Prescripciones = () => {
 
     const getItems = async() => {
         const items = [];
-        await fetch("http://localhost:8090/graphql?query=query GetPrescripciones { getPrescripciones {fecha_emision id medico paciente } }").then(response=>response.json().then(data=>{
-            console.log(data.data.getPrescripciones);
+        await fetch("http://localhost:8090/graphql?query=query GetPrescripciones { getPrescripciones {fecha_emision id medico paciente medicamentos { nombre dosis } } }").then(response=>response.json().then(data=>{
+            //console.log(data.data.getPrescripciones);
             for(let i=0; i < data.data.getPrescripciones.length; i++){
-                items.push(
-                    {
-                        id: data.data.getPrescripciones[i].id,
-                        fecha: data.data.getPrescripciones[i].fecha_emision,
-                        text: data.data.getPrescripciones[i].medico,
-                        paciente:data.data.getPrescripciones[i].paciente,
-                        key: i
-                    }
-                );
+                console.log(data.data.getPrescripciones[i])
+                if (data.data.getPrescripciones[i] != null) {
+                    items.push(
+                        {
+                            id: i,
+                            fecha: data.data.getPrescripciones[i].fecha_emision,
+                            medico: data.data.getPrescripciones[i].medico,
+                            paciente: data.data.getPrescripciones[i].paciente,
+                            medicamentos: data.data.getPrescripciones[i].medicamentos == null ? [] : data.data.getPrescripciones[i].medicamentos,
+                            key: i
+                        }
+                    );
+                }
+                
             }
         }));
         setPrescripciones(items);
     }
     const cargarPrescripcion =(id)=>{
         let lista = prescripciones.filter(i=>i.id===id);
-        console.log(id,lista);
+        
         if(lista.length>0){
-            setIdentificador(lista[0].id)
+
+            let p = lista[0];
+            console.log(p);
+            setIdentificador(p.id)
+            setFecha(p.fecha);
+            //setFechaNacimiento(p.fechaNacimiento);
+            //setRUN(p.RUN);
+            setPaciente(p.paciente);
+            setMedicamentosPresc((p.medicamentos !== undefined) ? p.medicamentos : []);
         }
     }
     const Item = (props) => {
@@ -175,11 +191,15 @@ const Prescripciones = () => {
             setHide(true);
         }
     },[]);
-
+    useEffect(() => {
+        getItems()
+    },[])
+    useEffect(() => {
+        //setMedicamentosPresc()
+    },[])
     const handleQuery = (e) => {
         setQuery(e.target.value);
     }
-
     return (
         <Box sx={{ flexGrow: 1}}>
             <Grid container spacing={_spacing}>
@@ -194,7 +214,7 @@ const Prescripciones = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Prescripciones Médicas</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {prescripciones.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.id} text={item.text}/>)}
+                        {prescripciones.filter(item => item.paciente.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.id} text={item.paciente}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
@@ -202,11 +222,11 @@ const Prescripciones = () => {
                     <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'inherith'}}>
                         <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
                         <Field xs={6} value={identificador} header={"Identificador"}/>
-                        <Field xs={6} value={identificador} header={"Fecha de Emisión"}/>
-                        <Field xs={12} value={identificador} header={"Nombre Completo del Paciente"}/>
-                        <Field xs={6} value={identificador} header={"RUN"}/>
-                        <Field xs={6} value={identificador} header={"Fecha de Nacimiento"}/>
-                        <Field xs={12} value={identificador} header={"Edad"}/>
+                        <Field xs={6} value={fecha} header={"Fecha de Emisión"}/>
+                        <Field xs={12} value={paciente} header={"Nombre Completo del Paciente"}/>
+                        {/* <Field xs={6} value={run} header={"RUN"}/>
+                        <Field xs={6} value={fechaNacimiento} header={"Fecha de Nacimiento"}/>
+                        <Field xs={12} value={edad} header={"Edad"}/> */}
                         <Grid item xs={12}>
                             <Title>Prescripción</Title>
                             <Grid container spacing={_spacing}>
@@ -214,50 +234,27 @@ const Prescripciones = () => {
                                     <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
                                         <p><b>Medicamento</b></p>
                                     </CustomBox>
-                                    {medicamentos.map(medicamento => {
+                                    {medicamentosPresc.map(m => {
                                         return (
                                             <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <p>{medicamento.name}</p>
+                                                <p>{m.nombre}</p>
                                             </CustomBox>
                                         )
                                     })}
                                 </Grid>
                                 <Grid item xs={3}>
                                     <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Cantidad</b></p>
+                                        <p><b>Dosis</b></p>
                                     </CustomBox>
-                                    {medicamentos.map(medicamento => {
+                                    {medicamentosPresc.map(m => {
                                         return (
                                             <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <p>{medicamento.amount}</p>
+                                                <p>{m.dosis}</p>
                                             </CustomBox>
                                         )
                                     })}
                                 </Grid>
-                                <Grid item xs={3}>
-                                    <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Stock</b></p>
-                                    </CustomBox>
-                                    {medicamentos.map(medicamento => {
-                                        return (
-                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                {medicamento.stock ? <CheckIcon/> : <CloseIcon/>}
-                                            </CustomBox>
-                                        )
-                                    })}
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Estado</b></p>
-                                    </CustomBox>
-                                    {medicamentos.map(medicamento => {
-                                        return (
-                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <p>{medicamento.state}</p>
-                                            </CustomBox>
-                                        )
-                                    })}
-                                </Grid>
+                                
                             </Grid>
                         </Grid>
                         <Grid item xs={6}>
