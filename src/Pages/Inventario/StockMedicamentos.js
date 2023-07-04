@@ -226,11 +226,10 @@ export default function StockMedicamentos () {
         for (let i = 0; i < valores.length; i++) {
           rows.push(
             createData(
-              i,
               valores[i].codigo,
               valores[i].nombre,
               valores[i].laboratorio,
-              valores[i].stock
+              valores[i].stock+ ` [${valores[i].unidadMedida}]`
             )
           );
         }

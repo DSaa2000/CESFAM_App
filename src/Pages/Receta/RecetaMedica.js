@@ -1,8 +1,7 @@
 import '../Medicamentos/Medicamentos.css'
 import React from "react";
-import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Modal } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import { useState, useEffect } from "react";
+import { Box,Grid,InputBase,Paper,Button } from "@mui/material";
+import { useState } from "react";
 import gql from 'graphql-tag';
 import { Mutation } from '@apollo/react-components';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
@@ -136,13 +135,14 @@ const Prescripciones = () => {
                             </Grid>
                             
                             <div>
-                <label>Medicamentos:</label>
+                <label style={{marginLeft: "20px"}}>Medicamentos:</label>
                 {medicamentos.map((medicamento, index) => (
-                  <div key={index}>
+                  <div key={index} style={{marginLeft: "20px"}}>
                     <input
                       type="text"
                       placeholder="Nombre del Medicamento"
                       value={medicamento.nombre}
+                      style={{backgroundColor: "#F4EEE5", padding: "8px", marginRight: "5px", border: "1px solid white"}}
                       onChange={(event) =>
                         handleMedicamentosChange(index, 'nombre', event.target.value)
                       }
@@ -150,17 +150,18 @@ const Prescripciones = () => {
                     <input
                       type="text"
                       placeholder="Dosis"
+                      style={{backgroundColor: "#F4EEE5", padding: "8px", marginRight: "5px", border: "1px solid white"}}
                       value={medicamento.dosis}
                       onChange={(event) =>
                         handleMedicamentosChange(index, 'dosis', event.target.value)
                       }
                     />
-                    <button type="button" onClick={() => handleRemoveMedicamentos(index)}>
+                    <button type="button" onClick={() => handleRemoveMedicamentos(index)}  style={{marginLeft: "20px",backgroundColor: "rgb(166, 209, 230)", padding: "8px", marginRight: "5px", marginTop: "20px", border: "1px solid gray"}}>
                       Eliminar
                     </button>
                   </div>
                 ))}
-                <button type="button" onClick={handleAddMedicamentos}>
+                <button type="button" onClick={handleAddMedicamentos} style={{marginLeft: "20px",backgroundColor: "rgb(166, 209, 230)", padding: "8px", marginRight: "5px", marginTop: "20px", border: "1px solid gray"}}>
                   Agregar Medicamento
                 </button>
                  </div>
