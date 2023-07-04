@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import { Grid , Stack} from "@mui/material";
@@ -30,14 +30,11 @@ import InputBase from '@mui/material/InputBase';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import SearchIcon from '@mui/icons-material/Search';
-import { blue } from '@mui/material/colors';
-
 const Title = ({ children }) => {
   return (
       <p style={{fontWeight: "bold", margin: 0}}>{children}</p>
@@ -52,19 +49,10 @@ const CustomBox = ({ children, style }) => {
   );
 }
 
-const Field = (props) => {
-  return (
-      <Grid item xs={props.xs}>
-          <Title>{props.header}</Title>
-          <CustomBox>
-              <InputBase sx={{width: "100%"}} placeholder={props.placeholder}/>
-          </CustomBox>
-      </Grid>
-  )
-}
 
-function createData(code, name, lab, reserva,fecha,icon) {
-    return { code, name, lab, reserva, fecha,icon };
+
+function createData(id,code, name, lab, reserva,fecha) {
+    return { id,code, name, lab, reserva, fecha };
 }
 
 const DEFAULT_ORDER = 'asc';
@@ -76,19 +64,9 @@ const headCells = [
   { id: 'name', numeric: false, disablePadding: false, label: 'Medicamento' },
   { id: 'lab', numeric: false, disablePadding: false, label: 'Laboratorio' },
   { id: 'reserva', numeric: true, disablePadding: false, label: 'Cantidad Reservada' },
-  { id: 'fecha', numeric: false, disablePadding: false, label: 'Fecha Llegada' },
+  { id: 'fecha', numeric: false, align: 'center', disablePadding: false, label: 'Fecha Llegada' },
 ];
 
-const rows = [  
-    createData(1324171354, 'Paracetamol','Laboratorio Chile S.A.', 11, '11-04-2023'),
-    createData(1403500365, 'Clorfenamina','Laboratorio Chile S.A.', 5, '11-04-2023'),
-    createData(1324171354, 'Ibuprofeto','Laboratorio Chile S.A.', 231, '11-04-2023'),
-    createData(1403500365, 'Betametasona','Mintlab Co. S.A.', 341, '11-04-2023'),
-    createData(1324171354, 'Ketorolaco','Laboratorio Chile S.A.', 4, '11-04-2023'),
-    createData(1403500365, 'Metanfetaminas','Laboratorio Chile S.A.', 312, '11-04-2023'),
-    createData(1324171354, 'Tapsin','Laboratorio Chile S.A.', 543, '11-04-2023'),
-    createData(1403500365, 'Clotrimazol','Mintlab Co. S.A.', 23, '11-04-2023'),
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -99,6 +77,7 @@ function descendingComparator(a, b, orderBy) {
   }
   return 0;
 }
+
 
 function getComparator(order, orderBy) {
   return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
@@ -129,7 +108,7 @@ function EnhancedTableHead(props) {
           <Checkbox color="primary" indeterminate={numSelected > 0 && numSelected < rowCount} checked={rowCount > 0 && numSelected === rowCount} onChange={onSelectAllClick} inputProps={{ 'aria-label': 'Todos seleccionados' }} />
         </TableCell>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={headCell.disablePadding ? 'none' : 'normal'} sortDirection={orderBy === headCell.id ? order : false} >
+          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : (headCell.align ? headCell.align : 'left')} padding={headCell.disablePadding ? 'none' : 'normal'} sortDirection={orderBy === headCell.id ? order : false} >
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
               <b>{headCell.label}</b>
               {orderBy === headCell.id ? (
@@ -182,11 +161,11 @@ function EnhancedTableToolbar(props) {
 
       {numSelected >= 1 ? (
         <div>
-        <Tooltip title="Delte">
+        {/* <Tooltip title="Delte">
           <IconButton>
             <DeleteIcon />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
       </div>
       ) : (
         <div>
@@ -201,11 +180,9 @@ function EnhancedTableToolbar(props) {
     </Toolbar>
   );
 }
-
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
-
 export default function MedicamentosReservados () {
   
   const [order, setOrder] = React.useState(DEFAULT_ORDER);
@@ -217,20 +194,68 @@ export default function MedicamentosReservados () {
   const [rowsPerPage, setRowsPerPage] = React.useState(DEFAULT_ROWS_PER_PAGE);
   const [paddingHeight, setPaddingHeight] = React.useState(0);
 
+  const [medicamento, setMedicamento] = useState('');
+  const [info, setInfo] = useState('');
+  const [cantidad, setCantidad] = useState(0);
+  const [fecha, setFecha] = React.useState('');
+  const [laboratorio, setLab] = React.useState('');
+  const [code, setCode] = React.useState('');
+
+  const [rows, setRows] = React.useState([]); // Estado local para almacenar las filas
+  const [respaldo, setRespaldo] = React.useState([]); 
+  // Función para actualizar las filas y el HTML de forma reactiva
+  const updateRows = (newRows) => {
+    setRows(newRows);
+    setVisibleRows(newRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
+  };
+  async function GetData() {
+           
+    await fetch("http://localhost:8090/graphql", 
+      {
+        method: 'POST',
+        headers: {
+          "Content-Type":"application/json",
+        },
+        body: JSON.stringify({
+          "query": `query GetReservas {
+                      getReservas {
+                        cantidadReservada
+                        codigo
+                        fechaLlegada
+                        laboratorio
+                        nombreMedicamento
+                      }
+                    }`,
+          "operationName": "GetReservas",
+          "variables":   {  }
+        })
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let valores = data.data.getReservas;
+        let newfilas = [];
+        for (let i = 0; i < valores.length; i++) {
+          newfilas.push(
+            createData(
+              i,
+              valores[i].codigo,
+              valores[i].nombreMedicamento,
+              valores[i].laboratorio,
+              valores[i].cantidadReservada,
+              valores[i].fechaLlegada
+            )
+          );
+        }
+        updateRows(newfilas); // Actualizar las filas y el HTML reactivamente
+        setRespaldo(newfilas);
+      });
+  }
   React.useEffect(() => {
-    let rowsOnMount = stableSort(
-      rows,
-      getComparator(DEFAULT_ORDER, DEFAULT_ORDER_BY),
-    );
-
-    rowsOnMount = rowsOnMount.slice(
-      0 * DEFAULT_ROWS_PER_PAGE,
-      0 * DEFAULT_ROWS_PER_PAGE + DEFAULT_ROWS_PER_PAGE,
-    );
-
-    setVisibleRows(rowsOnMount);
+    // ...
+    GetData();
+    // ...
   }, []);
-
+  
   const handleRequestSort = React.useCallback(
     (event, newOrderBy) => {
       const isAsc = orderBy === newOrderBy && order === 'asc';
@@ -246,7 +271,7 @@ export default function MedicamentosReservados () {
 
       setVisibleRows(updatedRows);
     },
-    [order, orderBy, page, rowsPerPage],
+    [o],
   );
 
   const handleSelectAllClick = (event) => {
@@ -326,97 +351,194 @@ export default function MedicamentosReservados () {
   const [open2, setOpenFilter] = React.useState(false);
   const handleOpenFilter = () => setOpenFilter(true);
   const handleCloseFilter = () => setOpenFilter(false);
-  return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{margin: '20px', padding: '20px'}}>
+  
+  const Filtrar = (search) => {
+    console.log("search:",search)
+    if (search === "") {
+      updateRows(respaldo);
+    }
+    else {
+      let filas = [];
+      respaldo.forEach(i => {
+        console.log(i)
+        // { id,code, name, lab, reserva, fecha };
+        if (i.code.toLowerCase().includes(search.toLowerCase()) ||
+            i.name.toLowerCase().includes(search.toLowerCase()) ||
+            i.lab.toLowerCase().includes(search.toLowerCase()) ||
+            (i.reserva + "").toLowerCase().includes(search.toLowerCase()) ||
+            i.fecha.toLowerCase().includes(search.toLowerCase())) {
+          filas.push(i);
+        }
+      });
+      updateRows(filas);
+      
+    }
     
-        <h1>Reserva de Medicamentos</h1>
+  }
+  const AddReserva = () => {
+    if (medicamento === "" || code === "" || cantidad === "" || cantidad <= 0 || laboratorio === "" || fecha === "") 
+    {
+      setInfo("(*) Complete todos los campos");
+      return;
+    }
+    else  {
+      setInfo("");
+      const data = {
+        "query": `mutation AddReserva($input: Reserva_Input) {
+          addReserva(input: $input) {
+            codigo
+            cantidadReservada
+            fechaLlegada
+            laboratorio
+            nombreMedicamento
         
-        <div style={{marginBottom: '20px', color: 'black', borderRadius: '5px', display: 'inline-flex',width: '100%'}}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={10}>
-            <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', display: 'flex'}}>
-                <IconButton type="button" sx={{ p: '10px' }} aria-label="search" >
-                    <SearchIcon />
-                </IconButton>
-                <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Buscar..." inputProps={{ 'aria-label': 'Buscar...' }}  />
-            </div>
-            </Grid>
-            <Grid item xs={12} sm={6} md={1}>
-              <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none',  width:'100%'}}><AddIcon /></Button>
-              <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-                <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)",backgroundColor: "#FEFBF6"}}>
-                  <Paper sx={{background:"#F4EEE5", padding: '1em'}} elevation={'0'}>
-                  <Typography id="modal-modal-title" variant="h6" component="h2">
-                      <b>Agregar Medicamento</b>
-                  </Typography>
+          }
+        }`,
+        "operationName": "AddReserva",
+        "variables":   { 
+          "input": {
+            "cantidadReservada": cantidad*1,
+            "fechaLlegada": fecha,
+            "laboratorio": laboratorio,
+            "codigo": code,
+            "nombreMedicamento": medicamento
+          }
+        } 
+      }
+      fetch("http://localhost:8090/graphql", {
+        method: 'POST',
+        headers: {
+          "Content-Type":"application/json",
+        },
+        body: JSON.stringify(data)
+      }).then(response=>response.json()).then(data => {
+        setOpen(false);
+        GetData();
+      });
+    }
+  }
+
+  return (
+      <Paper sx={{ width: '100%', overflow: 'hidden' }} style={{margin: '20px', padding: '20px'}}>
+      
+          <h1>Reserva de Medicamentos</h1>
+          
+          <div style={{marginBottom: '20px', color: 'black', borderRadius: '5px', display: 'inline-flex',width: '100%'}}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={10}>
+              <div style={{backgroundColor: '#F4EEE5', width: '100%', borderRadius: '5px', display: 'flex'}}>
+                  <IconButton type="button" sx={{ p: '10px' }} aria-label="search" >
+                      <SearchIcon />
+                  </IconButton>
+                  <InputBase sx={{ ml: 1, flex: 1 }} placeholder="Buscar..." inputProps={{ 'aria-label': 'Buscar...' }} onChange={(event) => Filtrar(event.target.value)} />
+              </div>
+              </Grid>
+              <Grid item xs={12} sm={6} md={1}>
+                <Button onClick={handleOpen} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', boxShadow: 'none',  width:'100%'}}><AddIcon /></Button>
+                <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+                  <Paper sx={{width:"50%", top:"50%", left:"50%", position:"relative", transform: "translate(-50%,-50%)",backgroundColor: "#FEFBF6"}}>
+                    <Paper sx={{background:"#F4EEE5", padding: '1em'}} elevation={0}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        <b>Agregar Medicamento</b>
+                    </Typography>
+                    </Paper>
+                    <span style={{ textAlign: "center", display: "block",color: "red" }}>{info}</span>
+                    <Grid container spacing={2} sx={{padding:"1em"}}>
+                      <Grid item xs={3}>
+                        <Grid item xs={12}>
+                            <Title>Código Medicamento</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} placeholder='Ingrese código...' value={code} onChange={(event) => setCode(event.target.value)}></InputBase>
+                            </CustomBox>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={9}>
+                        <Grid item xs={12}>
+                            <Title>Medicamento</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} placeholder='Ingrese medicamento...' value={medicamento} onChange={(event) => setMedicamento(event.target.value)}></InputBase>
+                            </CustomBox>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Grid item xs={12}>
+                            <Title>Cantidad</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} placeholder='0' value={cantidad} onChange={(event) => setCantidad(event.target.value)}></InputBase>
+                            </CustomBox>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Grid item xs={12}>
+                            <Title>Fecha de Llegada</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} placeholder='Ingrese Fecha de llegada...' value={fecha} onChange={(event) => setFecha(event.target.value)}></InputBase>
+                            </CustomBox>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Grid item xs={12}>
+                            <Title>Laboratorio</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} placeholder='Ingrese Laboratorio...' value={laboratorio} onChange={(event) => setLab(event.target.value)}></InputBase>
+                            </CustomBox>
+                        </Grid>
+                      </Grid>
+                      
+                      <Grid item xs={12}>
+                        <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
+                            <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={handleClose}>Cancelar</Button>
+                            <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={AddReserva}>Agregar</Button>
+                        </Stack>
+                      </Grid>
+                    </Grid>
                   </Paper>
-                  <Grid container spacing={2} sx={{padding:"1em"}}>
-                    <Grid item xs={10}>
-                      <Field header={"Medicamento"} placeholder='Ingrese medicamento...'></Field>
-                    </Grid>
-                    <Grid item xs={2}>
-                    <Field header={"Cantidad"} placeholder='0'></Field>
-                    </Grid>
-                    <Grid item xs={12}>
-                    <Field header={"RUT Paciente"} placeholder='Ingrese RUT...'></Field>
-                    </Grid>
-                    <Grid item xs={12}>
-                    <Field header={"Prescripción"} placeholder='Ingrese Prescripción'></Field>
-                    </Grid>
-                    <Grid item xs={12} spacing={2}>
-                      <Stack direction={"row"} justifyContent={"flex-end"} spacing={2}>
-                          <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}} onClick={handleClose}>Cancelar</Button>
-                          <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Agregar</Button>
-                      </Stack>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Modal>
+                </Modal>
+              </Grid>
+              <Grid item xs={12} sm={6} md={1}>
+                <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none', width:'100%'}}><FilterAltIcon /></Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={1}>
-              <Button onClick={handleOpenFilter} variant="contained" style={{backgroundColor: '#F4EEE5', color: 'black', marginRight: '10px', boxShadow: 'none', width:'100%'}}><FilterAltIcon /></Button>
-            </Grid>
-          </Grid>
-        </div>
-        
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 2 }}>                
-                <EnhancedTableToolbar numSelected={selected.length} />
-
-                <TableContainer>
-                    <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
-                        <EnhancedTableHead numSelected={selected.length} order={order} orderBy={orderBy} onSelectAllClick={handleSelectAllClick} onRequestSort={handleRequestSort} rowCount={rows.length}/>
-                        <TableBody bgcolor='#FEFBF6'>
-                        {visibleRows ? visibleRows.map((row, index) => {
-                                const isItemSelected = isSelected(row.name);
-                                const labelId = `enhanced-table-checkbox-${index}`;
-                                return (
-                                <TableRow hover onClick={(event) => handleClick(event, row.name)} role="checkbox" aria-checked={isItemSelected} tabIndex={-1} key={row.name} selected={isItemSelected} sx={{ cursor: 'pointer' }}>
-                                    <TableCell padding="checkbox">
-                                    <Checkbox color="primary" checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
-                                    </TableCell>
-                                    <TableCell component="th" id={labelId} scope="row" padding="none" align='right'>{row.code} </TableCell>
-                                    <TableCell align="left">{row.name}</TableCell>
-                                    <TableCell align="left">{row.lab}</TableCell>
-                                    <TableCell align="right">{row.reserva}</TableCell>
-                                    <TableCell align="center">{row.fecha}</TableCell>
-                                </TableRow>
-                                );
-                            })
-                            : null}
-                        {paddingHeight > 0 && (
-                            <TableRow style={{ height: paddingHeight, }}>
-                                <TableCell colSpan={6} />
-                            </TableRow>
-                        )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
-                <TablePagination rowsPerPageOptions={[5, 10, 25]} component="div" count={rows.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage}/>
-            </Paper>
-        </Box>
-
-        <Button style={{display: 'flex', float: 'right', backgroundColor: "#A6D1E6", color: "#2C2C2F"}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
-    </Paper>);
+          </div>
+          
+          <Box sx={{ width: '100%' }}>
+              <Paper sx={{ width: '100%', mb: 2 }}>                
+                  <EnhancedTableToolbar numSelected={selected.length} />
+  
+                  <TableContainer>
+                      <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
+                          <EnhancedTableHead numSelected={selected.length} order={order} orderBy={orderBy} onSelectAllClick={handleSelectAllClick} onRequestSort={handleRequestSort} rowCount={rows.length}/>
+                          <TableBody bgcolor='#FEFBF6'>
+                          {visibleRows ? visibleRows.map((row, index) => {
+                                  const isItemSelected = isSelected(row.name);
+                                  const labelId = `enhanced-table-checkbox-${index}`;
+                                  return (
+                                  <TableRow hover onClick={(event) => handleClick(event, row.name)} role="checkbox" aria-checked={isItemSelected} tabIndex={-1} key={row.id} selected={isItemSelected} sx={{ cursor: 'pointer' }}>
+                                      <TableCell padding="checkbox">
+                                      <Checkbox color="primary" checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
+                                      </TableCell>
+                                      <TableCell component="th" id={labelId} scope="row" padding="none" align='right'>{row.code} </TableCell>
+                                      <TableCell align="left">{row.name}</TableCell>
+                                      <TableCell align="left">{row.lab}</TableCell>
+                                      <TableCell align="right">{row.reserva}</TableCell>
+                                      <TableCell align="center">{row.fecha}</TableCell>
+                                  </TableRow>
+                                  );
+                              })
+                              : null}
+                          {paddingHeight > 0 && (
+                              <TableRow style={{ height: paddingHeight, }}>
+                                  <TableCell colSpan={6} />
+                              </TableRow>
+                          )}
+                          </TableBody>
+                      </Table>
+                  </TableContainer>
+  
+                  <TablePagination rowsPerPageOptions={[5, 10, 25]} component="div" count={rows.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage}/>
+              </Paper>
+          </Box>
+  
+          <Button style={{display: 'flex', float: 'right', backgroundColor: "#A6D1E6", color: "#2C2C2F"}} variant="contained" startIcon={<GetAppIcon />}> Generar Reporte</Button>
+      </Paper>);  
 }

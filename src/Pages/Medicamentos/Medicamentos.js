@@ -7,22 +7,6 @@ import { useState, useEffect } from "react";
 
 const _spacing = 2;
 
-const getItems = (number) => {
-    const items = [];
-    for(let i=0; i < number; i++){
-        items.push(
-            {
-                number: "P"+i,
-                text: "Lorem ipsum is simply dummy text",
-                key: i
-            }
-        );
-    }
-    return items;
-}
-
-const itemsList = getItems(15);
-
 const Title = ({ children }) => {
     return (
         <p style={{fontWeight: "bold", margin: 0}}>{children}</p>
@@ -35,17 +19,6 @@ const CustomBox = ({ children, style }) => {
             {children}
         </Paper>
     );
-}
-
-const Field = (props) => {
-    return (
-        <Grid item xs={props.xs} sm={props.sm}>
-            <Title>{props.header}</Title>
-            <CustomBox>
-                <InputBase sx={{width: "100%"}}/>
-            </CustomBox>
-        </Grid>
-    )
 }
 
 const SearchBar = (props) => {
@@ -70,14 +43,72 @@ const SearchBar = (props) => {
 }
 
 const Medicamentos = () => {
+
+    const UpdateMedicamento = () => {
+        const data = {
+        "query": `mutation UpdateMedicamento($updateMedicamentoId: ID!, $input: Medicamento_Input) {
+            updateMedicamento(id: $updateMedicamentoId, input: $input) {
+              codigo
+            }
+          }`,
+        "operationName": "UpdateMedicamento",
+        "variables":   {
+            "updateMedicamentoId": medicamentoObj.id,
+            "input": {
+              "dosis": medicamentoObj.dosis,
+              "codigo": medicamentoObj.number,
+              "condiciones": medicamentoObj.condiciones,
+              "fecha": medicamentoObj.fecha,
+              "laboratorio": medicamentoObj.laboratorio,
+              "nombre": medicamentoObj.text,
+              "stock": medicamentoObj.stock,
+              "unidadMedida": medicamentoObj.unidad
+            }
+          }
+        }
+        fetch("http://localhost:8090/graphql", {
+        method: 'POST',
+        headers: {
+            "Content-Type":"application/json",
+        },
+        body: JSON.stringify(data)
+        }).then(response=>response.json()).then(data => {
+            getItems();
+        });
+    }
+
+    const getItems = async() => {
+        const items = [];
+        await fetch("http://localhost:8090/graphql?query=query GetMedicamentos{getMedicamentos{ _id codigo condiciones dosis fecha laboratorio nombre stock unidadMedida}}").then(response=>response.json().then(data=>{
+            console.log(data.data.getMedicamentos);
+    
+            for(let i=0; i < data.data.getMedicamentos.length; i++){
+                items.push(
+                    {
+                        id: data.data.getMedicamentos[i]._id,
+                        number: data.data.getMedicamentos[i].codigo,
+                        text: data.data.getMedicamentos[i].nombre,
+                        laboratorio:data.data.getMedicamentos[i].laboratorio,
+                        stock:data.data.getMedicamentos[i].stock,
+                        dosis:data.data.getMedicamentos[i].dosis,
+                        unidad:data.data.getMedicamentos[i].unidadMedida,
+                        condiciones:data.data.getMedicamentos[i].condiciones,
+                        fecha: data.data.getMedicamentos[i].fecha,
+                        indice: i,
+                        key: i
+                    }
+                );
+            }
+        }));
+        setListaMedicamentos(items);
+    }
+
     const s = (e) => {
         if (hide === true) handleOpen();
         let x = document.getElementsByClassName('itemSelected');
         for (let i = 0; i< x.length; i++) {
-            console.log(x[i])
             x[i].classList.remove('itemSelected');
         }
-        console.log('Class', );
         if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
         else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
         else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
@@ -88,7 +119,9 @@ const Medicamentos = () => {
     const Item = (props) => {
     return(
         <div onClick={s} className="test">
-        <ListItem key={props.key}  >
+        <ListItem key={props.indice} onClick={(e)=>{
+            setIndice(props.indice);
+            }} >
             <ListItemText
                 primary={props.number}
                 primaryTypographyProps={{
@@ -110,14 +143,24 @@ const Medicamentos = () => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [indice,setIndice] = useState(-1);
+    const [medicamentoObj,setMedicamentoObj] = useState({});
+    const [listaMedicamentos, setListaMedicamentos] = useState([]);
+    useEffect(() => {
+        getItems()
+    },[])
 
     const _md = 900; // Default md size
+
+    useEffect(() => {
+        setMedicamentoObj({...listaMedicamentos[indice]});
+        console.log(indice, medicamentoObj);
+    },[indice]);
 
     const changeNavState = (sm) => {
         const _show = window.innerWidth > sm ? false : true;
         setHide(_show);
         if (_show === false) handleClose();
-        console.log("Change");
     }
 
     window.onload = () => {
@@ -136,6 +179,16 @@ const Medicamentos = () => {
     const handleQuery = (e) => {
         setQuery(e.target.value);
     }
+    const Field = (props) => {
+        return (
+            <Grid item xs={props.xs} sm={props.sm}>
+                <Title>{props.header}</Title>
+                <CustomBox>
+                    <InputBase sx={{width: "100%"}} value={medicamentoObj} onChange={((event) => setMedicamentoObj(event.target.value))} inputProps={{placeholder: props.defaultValue}}/>
+                </CustomBox>
+            </Grid>
+        )
+    }
 
     return (
         <Box sx={{ flexGrow: 1}}>
@@ -151,23 +204,60 @@ const Medicamentos = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Lista de inventario</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} key={item.number} text={item.text}/>)}
+                        {listaMedicamentos.filter(item => item.text.toLowerCase().startsWith(query.toLocaleLowerCase()) || item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} indice={item.indice} text={item.text}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
                 <Grid item xs={12} md={8} lg={6} p={_spacing} style={{display: hide ? 'none' : 'block'}}>
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Medicamento</h1></Grid>
-                        <Field xs={8} header={"Nombre Medicamento"}/>
-                        <Field xs={4} header={"Codigo"}/>
-                        <Field xs={12} header={"Laboratorio"}/>
-                        <Field xs={4} header={"Cantidad en Stock"}/>
-                        <Field xs={4} header={"Dosis"}/>
-                        <Field xs={4} header={"Unidad Medida"}/>
-                        <Field xs={12} header={"Condiciones de Conservación"}/>
+                        <Grid item xs={8}>
+                            <Title>Nombre Medicamento</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.text} onChange={(e) => setMedicamentoObj({...medicamentoObj, text: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Title>Codigo</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.number} onChange={(e) => setMedicamentoObj({...medicamentoObj, number: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Title>Laboratorio</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.laboratorio} onChange={(e) => setMedicamentoObj({...medicamentoObj, laboratorio: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Title>Cantidad en Stock</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.stock} onChange={(e) => setMedicamentoObj({...medicamentoObj, stock: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Title>Dosis</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.dosis} onChange={(e) => setMedicamentoObj({...medicamentoObj, dosis: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Title>Unidad Medida</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.unidad} onChange={(e) => setMedicamentoObj({...medicamentoObj, unidad: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Title>Condiciones de Conservación</Title>
+                            <CustomBox>
+                                <InputBase sx={{width: "100%"}} value={medicamentoObj?.condiciones} onChange={(e) => setMedicamentoObj({...medicamentoObj, condiciones: e.target.value})}/>
+                            </CustomBox>
+                        </Grid>
                         <Grid item xs={12} spacing={_spacing}>
                             <Stack direction={"row"} justifyContent={"flex-end"} spacing={_spacing}>
-                                <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
+                                <Button onClick={()=>{
+                                    UpdateMedicamento();
+                                }} variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Editar</Button>
                                 <Button variant="contained" sx={{backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Registrar baja</Button>
                             </Stack>
                         </Grid>

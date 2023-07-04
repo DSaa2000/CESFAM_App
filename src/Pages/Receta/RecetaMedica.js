@@ -1,26 +1,39 @@
 import '../Medicamentos/Medicamentos.css'
 import React from "react";
-import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Modal } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import { useState, useEffect } from "react";
+import { Box,Grid,InputBase,Paper,Button } from "@mui/material";
+import { useState } from "react";
+import gql from 'graphql-tag';
+import { Mutation } from '@apollo/react-components';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
+
+const client = new ApolloClient({
+
+  uri: 'http://localhost:8090/graphql',
+  cache: new InMemoryCache(),
+
+});
+
+const ADD_PRESCRIPCION = gql`
+  mutation addPrescripcion($input: Prescripcion_Input!) {
+    addPrescripcion(input: $input) {
+      medico
+      paciente
+      fecha_emision
+      medicamentos {
+        id
+        nombre
+        dosis
+    }
+    }
+  }
+`;
 const _spacing = 2;
 
-const getItems = (number) => {
-    const items = [];
-    for(let i=0; i < number; i++){
-        items.push(
-            {
-                number: "P"+i,
-                text: "Lorem ipsum is simply dummy text",
-                key: i
-            }
-        );
-    }
-    return items;
-}
 
-const itemsList = getItems(15);
+
+
+
 
 const Title = ({ children }) => {
     return (
@@ -36,45 +49,128 @@ const CustomBox = ({ children, style }) => {
     );
 }
 
-const Field = (props) => {
-    return (
-        <Grid item xs={props.xs} sm={props.sm} md={props.md}>
-            <Title>{props.header}</Title>
-            <CustomBox>
-                <InputBase sx={{width: "100%"}} placeholder={props.placeholder}/>
-            </CustomBox>
-        </Grid>
-    )
-}
 
-const medicamentos = [
-    {name: 'Paracetamol 500mg', amount: 1, stock: true, state: 'Entregado'},
-    {name: 'Ibuproféno 600mg', amount: 1, stock: false, state: 'C. Paciente'},
-    {name: 'Tapsin', amount: 1, stock: false, state: 'Pendiente'},
-];
 
 const Prescripciones = () => {
 
+    const [fecha_emision, setFecha_emision] = useState('');
+    const [medicamentos, setMedicamentos] = useState([{ nombre: '', dosis: '' }]);
+    const [medico, setMedico] = useState('');
+    const [paciente, setPaciente] = useState('');
+    const handleMedicamentosChange = (index, field, value) => {
+        const updatedMedicamentos = [...medicamentos];
+        updatedMedicamentos[index][field] = value;
+        setMedicamentos(updatedMedicamentos);
+    };
+    const handleAddMedicamentos = () => {
+        setMedicamentos([...medicamentos, { nombre: '', dosis: '' }]);
+    };
+    
+    const handleRemoveMedicamentos = (index) => {
+        const updatedMedicamentos = [...medicamentos];
+        updatedMedicamentos.splice(index, 1);
+        setMedicamentos(updatedMedicamentos);
+    };
+    
+    const handleSubmit = (addPrescripcion) => (event) => {
+        event.preventDefault();
+    
+        addPrescripcion({
+          variables: {
+            input: {
+              paciente,
+              medico,
+              fecha_emision,
+              medicamentos
+            }
+          }
+        })
+          .then((response) => {
+            console.log(response.data); 
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      };
+
+    
+
     return (
+        <ApolloProvider client={client}>
+        <Mutation mutation={ADD_PRESCRIPCION}>
+
+            {(addPrescripcion, { data }) => (
+
+        <div>
+          <form onSubmit={handleSubmit(addPrescripcion)}>
+
+            {/* <input ref={node => {medico = node;}}/>
+            <input ref={node => {paciente = node;}}/>
+            <input ref={node => {fecha_emision = node;}}/> 
+
+            <button type="submit">Add Todo</button> */}
+
+          
         <Box sx={{ flexGrow: 1}}>
                 <Grid item xs={12} lg={8} p={_spacing} >
                     <Grid container spacing={_spacing}>
                         <Grid item xs={12}><h1>Receta Médica Electrónica</h1></Grid>
-                        <Field xs={12} sm={6} header={"Identificador"}/>
-                        <Field xs={12} sm={6} header={"Fecha de Emisión"}/>
-                        <Field xs={12} header={"Nombre Completo del Paciente"}/>
-                        <Field xs={12} sm={6} header={"RUN"}/>
-                        <Field xs={12} sm={6} header={"Fecha de Nacimiento"}/>
-                        <Field xs={12} header={"Edad"}/>
-                        <Grid item xs={12}>
+                            <Grid item xs={12} sm={6}>
+                                <Title>{"Medico"}</Title>
+                                <CustomBox>
+                                    <InputBase sx={{width: "100%"}} value = {medico} onChange={(e) => setMedico(e.target.value)} />
+                                </CustomBox>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <Title>{"Fecha de Emisión"}</Title>
+                                <CustomBox>
+                                    <InputBase sx={{width: "100%"}}  value = {fecha_emision} onChange={(e) => setFecha_emision(e.target.value)} />
+                                </CustomBox>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Title>{"Nombre del Paciente"}</Title>
+                                <CustomBox>
+                                    <InputBase sx={{width: "100%"}}  value = {paciente} onChange={(e) => setPaciente(e.target.value)} />
+                                </CustomBox>
+                            </Grid>
+                            
+                            <div>
+                <label style={{marginLeft: "20px"}}>Medicamentos:</label>
+                {medicamentos.map((medicamento, index) => (
+                  <div key={index} style={{marginLeft: "20px"}}>
+                    <input
+                      type="text"
+                      placeholder="Nombre del Medicamento"
+                      value={medicamento.nombre}
+                      style={{backgroundColor: "#F4EEE5", padding: "8px", marginRight: "5px", border: "1px solid white"}}
+                      onChange={(event) =>
+                        handleMedicamentosChange(index, 'nombre', event.target.value)
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="Dosis"
+                      style={{backgroundColor: "#F4EEE5", padding: "8px", marginRight: "5px", border: "1px solid white"}}
+                      value={medicamento.dosis}
+                      onChange={(event) =>
+                        handleMedicamentosChange(index, 'dosis', event.target.value)
+                      }
+                    />
+                    <button type="button" onClick={() => handleRemoveMedicamentos(index)}  style={{marginLeft: "20px",backgroundColor: "rgb(166, 209, 230)", padding: "8px", marginRight: "5px", marginTop: "20px", border: "1px solid gray"}}>
+                      Eliminar
+                    </button>
+                  </div>
+                ))}
+                <button type="button" onClick={handleAddMedicamentos} style={{marginLeft: "20px",backgroundColor: "rgb(166, 209, 230)", padding: "8px", marginRight: "5px", marginTop: "20px", border: "1px solid gray"}}>
+                  Agregar Medicamento
+                </button>
+                 </div>
+                        {/* <Grid item xs={12}>
                             <Title>Prescripción</Title>
                             <Grid container spacing={_spacing}>
                                 <Grid item xs={12}>
-                                    <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Medicamento</b></p>
-                                    </CustomBox>
                                     <Grid container spacing={2}>
-                                        {medicamentos.map(medicamento => {
+                                        {medicamentos.map(medicamento,index) => {
                                             return (
                                                 <Grid item xs={12} sm={6} md={4}>
                                                     <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
@@ -89,7 +185,7 @@ const Prescripciones = () => {
                                     </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} md={5}>
                             <p>
                                 <b>Dr. Federico Santa María</b><br></br>
@@ -99,11 +195,17 @@ const Prescripciones = () => {
                         </Grid>
                         <Grid item xs={12} md={1}></Grid>
                         <Grid item xs={12} md={6}>
-                            <Button variant="contained" disableElevation fullWidth style={{marginTop: "1em", backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Emitir</Button>
+                            <Button variant="contained" type="submit" disableElevation fullWidth style={{marginTop: "1em", backgroundColor: "#A6D1E6", color: "#2C2C2F"}}>Emitir</Button>
                         </Grid>
                     </Grid>
                 </Grid>
         </Box>
+        </form>
+        </div>
+
+      )}
+        </Mutation>
+        </ApolloProvider>
     )
 }
 

@@ -36,6 +36,7 @@ const DEFAULT_ORDER = 'asc';
 const DEFAULT_ORDER_BY = 'code';
 const DEFAULT_ROWS_PER_PAGE = 10;
 
+
 function createData(code, name, lab, stock) {
     return { code, name, lab, stock };
 }
@@ -45,17 +46,6 @@ const headCells = [
     { id: 'name', numeric: false, disablePadding: false, label: 'Medicamento' },
     { id: 'lab', numeric: false, disablePadding: false, label: 'Laboratorio' },
     { id: 'stock', numeric: true, disablePadding: false, label: 'Stock' }
-];
-
-const rows = [  
-    createData(1324171354, 'Paracetamol','Laboratorio Chile S.A.', 1),
-    createData(1403500365, 'Clorfenamina','Laboratorio Chile S.A.', 5),
-    createData(1324171354, 'Ibuprofeto','Laboratorio Chile S.A.', 231),
-    createData(1403500365, 'Betametasona','Mintlab Co. S.A.', 341),
-    createData(1324171354, 'Ketorolaco','Laboratorio Chile S.A.', 4),
-    createData(1403500365, 'Metanfetaminas','Laboratorio Chile S.A.', 312),
-    createData(1324171354, 'Tapsin','Laboratorio Chile S.A.', 543),
-    createData(1403500365, 'Clotrimazol','Mintlab Co. S.A.', 23),
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -197,6 +187,61 @@ export default function StockMedicamentos () {
   const [visibleRows, setVisibleRows] = React.useState(null);
   const [rowsPerPage, setRowsPerPage] = React.useState(DEFAULT_ROWS_PER_PAGE);
   const [paddingHeight, setPaddingHeight] = React.useState(0);
+  const [respaldo, setRespaldo] = React.useState([]); 
+
+  const [rows, setRows] = React.useState([]); // Estado local para almacenar las filas
+
+  const updateRows = (newRows) => {
+    setRows(newRows);
+    setVisibleRows(newRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
+  };
+
+  async function GetData() {
+           
+    await fetch("http://localhost:8090/graphql", 
+      {
+        method: 'POST',
+        headers: {
+          "Content-Type":"application/json",
+        },
+        body: JSON.stringify({
+          "query": `query GetMedicamentos {
+            getMedicamentos {
+              codigo condiciones
+              dosis
+              fecha
+              laboratorio
+              nombre
+              stock
+              unidadMedida
+            }
+          }`,
+          "variables":   {  }
+        })
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let valores = data.data.getMedicamentos;
+        let rows = [];
+        for (let i = 0; i < valores.length; i++) {
+          rows.push(
+            createData(
+              valores[i].codigo,
+              valores[i].nombre,
+              valores[i].laboratorio,
+              valores[i].stock+ ` [${valores[i].unidadMedida}]`
+            )
+          );
+        }
+        updateRows(rows); // Actualizar las filas y el HTML reactivamente
+        setRespaldo(rows);
+      });
+    }
+    React.useEffect(() => {
+      // ...
+      GetData();
+      // ...
+    }, []);
 
   React.useEffect(() => {
     let rowsOnMount = stableSort(

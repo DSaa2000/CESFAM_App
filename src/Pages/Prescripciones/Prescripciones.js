@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import '../Medicamentos/Medicamentos.css'
 import React from "react";
 import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Modal } from "@mui/material";
@@ -8,7 +9,7 @@ import { useState, useEffect } from "react";
 
 const _spacing = 2;
 
-const getItems = (number) => {
+/* const getItems = (number) => {
     const items = [];
     for(let i=0; i < number; i++){
         items.push(
@@ -20,9 +21,9 @@ const getItems = (number) => {
         );
     }
     return items;
-}
+} */
 
-const itemsList = getItems(15);
+
 
 const Title = ({ children }) => {
     return (
@@ -43,7 +44,7 @@ const Field = (props) => {
         <Grid item xs={props.xs} md={props.md}>
             <Title>{props.header}</Title>
             <CustomBox>
-                <InputBase sx={{width: "100%"}}/>
+                <InputBase value={props.value} sx={{width: "100%"}}/>
             </CustomBox>
         </Grid>
     )
@@ -75,26 +76,66 @@ const medicamentos = [
 ];
 
 const Prescripciones = () => {
-    const s = (e,number) => {
-        if (hide === true) handleOpen();
-        let x = document.getElementsByClassName('itemSelected');
-        for (let i = 0; i< x.length; i++) {
-            x[i].classList.remove('itemSelected');
-        }
-        if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
-        else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.parentNode.className = 'test itemSelected';
+    const [indice] = useState(-1);
+    const [, setPrescripcion] = useState();
+    const [prescripciones, setPrescripciones] = useState([]);
+    const [identificador, setIdentificador] = useState("0");
+    const [paciente, setPaciente] = useState("");
+    const [fecha,setFecha] = useState("");
+    const [medicamentosPresc,setMedicamentosPresc] = useState([]);
+    useEffect(() => {
+        getItems()
+    },[])
 
-        //setTitle(number); 
-    };
+    useEffect(() => {
+        setPrescripcion({...prescripciones[indice]});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[indice]);
+
+    const getItems = async() => {
+        const items = [];
+        await fetch("http://localhost:8090/graphql?query=query GetPrescripciones { getPrescripciones {fecha_emision id medico paciente medicamentos { nombre dosis } } }").then(response=>response.json().then(data=>{
+            //console.log(data.data.getPrescripciones);
+            for(let i=0; i < data.data.getPrescripciones.length; i++){
+                console.log(data.data.getPrescripciones[i])
+                if (data.data.getPrescripciones[i] != null) {
+                    items.push(
+                        {
+                            id: i,
+                            fecha: data.data.getPrescripciones[i].fecha_emision,
+                            medico: data.data.getPrescripciones[i].medico,
+                            paciente: data.data.getPrescripciones[i].paciente,
+                            medicamentos: data.data.getPrescripciones[i].medicamentos == null ? [] : data.data.getPrescripciones[i].medicamentos,
+                            key: i
+                        }
+                    );
+                }
+                
+            }
+        }));
+        setPrescripciones(items);
+    }
+    const cargarPrescripcion =(id)=>{
+        let lista = prescripciones.filter(i=>i.id===id);
+        
+        if(lista.length>0){
+
+            let p = lista[0];
+            console.log(p);
+            setIdentificador(p.id)
+            setFecha(p.fecha);
+            //setFechaNacimiento(p.fechaNacimiento);
+            //setRUN(p.RUN);
+            setPaciente(p.paciente);
+            setMedicamentosPresc((p.medicamentos !== undefined) ? p.medicamentos : []);
+        }
+    }
     const Item = (props) => {
-    return(
-        <div  onClick={(e) => s(e,props.number)} className="test">
+        return(
+        <div  onClick={() => cargarPrescripcion(props.number)} className="test">
         <ListItem key={props.key}>
             <ListItemText
-                primary={props.number}
+                primary={props.id}
                 primaryTypographyProps={{
                     color: "grey",
                 }}
@@ -110,10 +151,9 @@ const Prescripciones = () => {
     );
 }
     const [query, setQuery] = useState('');
-    const [title, setTitle] = useState('P0');
+    const [title] = useState('P0');
     const [hide, setHide] = useState(false);
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const _lg = 1200; // Default lg size
@@ -137,12 +177,16 @@ const Prescripciones = () => {
         if(window.innerWidth < _lg) {
             setHide(true);
         }
-    },[]);
-
+    },[changeNavState]);
+    useEffect(() => {
+        getItems()
+    },[])
+    useEffect(() => {
+        //setMedicamentosPresc()
+    },[])
     const handleQuery = (e) => {
         setQuery(e.target.value);
     }
-
     return (
         <Box sx={{ flexGrow: 1}}>
             <Grid container spacing={_spacing}>
@@ -157,19 +201,19 @@ const Prescripciones = () => {
                             <h3 style={{margin: 0, textAlign: "center"}}>Prescripciones Médicas</h3>
                             <SearchBar placeholder={"Buscar"} handleQuery={handleQuery}/>
                         </ListSubheader>
-                        {itemsList.filter(item => item.number.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.number} text={item.text}/>)}
+                        {prescripciones.filter(item => item.paciente.toLowerCase().startsWith(query.toLocaleLowerCase())).map(item => <Item number={item.id} text={item.paciente}/>)}
                     </List>
                 </Grid>
                 {/* Medicamentos */}
                 <Grid item xs={12} lg={8} p={_spacing} >
                     <Grid container spacing={_spacing} sx={{display: hide ? 'none' : 'inherith'}}>
                         <Grid item xs={12}><h1>Prescripción #{title}</h1></Grid>
-                        <Field xs={6} header={"Identificador"}/>
-                        <Field xs={6} header={"Fecha de Emisión"}/>
-                        <Field xs={12} header={"Nombre Completo del Paciente"}/>
-                        <Field xs={6} header={"RUN"}/>
-                        <Field xs={6} header={"Fecha de Nacimiento"}/>
-                        <Field xs={12} header={"Edad"}/>
+                        <Field xs={6} value={identificador} header={"Identificador"}/>
+                        <Field xs={6} value={fecha} header={"Fecha de Emisión"}/>
+                        <Field xs={12} value={paciente} header={"Nombre Completo del Paciente"}/>
+                        {/* <Field xs={6} value={run} header={"RUN"}/>
+                        <Field xs={6} value={fechaNacimiento} header={"Fecha de Nacimiento"}/>
+                        <Field xs={12} value={edad} header={"Edad"}/> */}
                         <Grid item xs={12}>
                             <Title>Prescripción</Title>
                             <Grid container spacing={_spacing}>
@@ -177,50 +221,27 @@ const Prescripciones = () => {
                                     <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
                                         <p><b>Medicamento</b></p>
                                     </CustomBox>
-                                    {medicamentos.map(medicamento => {
+                                    {medicamentosPresc.map(m => {
                                         return (
                                             <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <p>{medicamento.name}</p>
+                                                <p>{m.nombre}</p>
                                             </CustomBox>
                                         )
                                     })}
                                 </Grid>
                                 <Grid item xs={3}>
                                     <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Cantidad</b></p>
+                                        <p><b>Dosis</b></p>
                                     </CustomBox>
-                                    {medicamentos.map(medicamento => {
+                                    {medicamentosPresc.map(m => {
                                         return (
                                             <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <p>{medicamento.amount}</p>
+                                                <p>{m.dosis}</p>
                                             </CustomBox>
                                         )
                                     })}
                                 </Grid>
-                                <Grid item xs={3}>
-                                    <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Stock</b></p>
-                                    </CustomBox>
-                                    {medicamentos.map(medicamento => {
-                                        return (
-                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                {medicamento.stock ? <CheckIcon/> : <CloseIcon/>}
-                                            </CustomBox>
-                                        )
-                                    })}
-                                </Grid>
-                                <Grid item xs={3}>
-                                    <CustomBox style={{height: "2em", display: "flex", alignItems: "center"}}>
-                                        <p><b>Estado</b></p>
-                                    </CustomBox>
-                                    {medicamentos.map(medicamento => {
-                                        return (
-                                            <CustomBox style={{height: "2em", marginTop: ".2em", display: "flex", alignItems: "center"}}>
-                                                <p>{medicamento.state}</p>
-                                            </CustomBox>
-                                        )
-                                    })}
-                                </Grid>
+                                
                             </Grid>
                         </Grid>
                         <Grid item xs={6}>
