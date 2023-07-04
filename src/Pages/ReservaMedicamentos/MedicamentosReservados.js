@@ -30,14 +30,11 @@ import InputBase from '@mui/material/InputBase';
 
 // Icons
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import SearchIcon from '@mui/icons-material/Search';
-import { Label } from '@mui/icons-material';
-import { red } from '@mui/material/colors';
 const Title = ({ children }) => {
   return (
       <p style={{fontWeight: "bold", margin: 0}}>{children}</p>
@@ -203,7 +200,6 @@ export default function MedicamentosReservados () {
   const [fecha, setFecha] = React.useState('');
   const [laboratorio, setLab] = React.useState('');
   const [code, setCode] = React.useState('');
-  const [busqueda, setBusqueda] = React.useState('');
 
   const [rows, setRows] = React.useState([]); // Estado local para almacenar las filas
   const [respaldo, setRespaldo] = React.useState([]); 
@@ -275,7 +271,7 @@ export default function MedicamentosReservados () {
 
       setVisibleRows(updatedRows);
     },
-    [order, orderBy, page, rowsPerPage],
+    [o],
   );
 
   const handleSelectAllClick = (event) => {

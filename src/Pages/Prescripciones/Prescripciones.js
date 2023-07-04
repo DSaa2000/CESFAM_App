@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import '../Medicamentos/Medicamentos.css'
 import React from "react";
 import { Box,Divider,Grid,InputBase,List,ListItem,ListItemText,ListSubheader,Paper,Button, Modal } from "@mui/material";
@@ -75,22 +76,8 @@ const medicamentos = [
 ];
 
 const Prescripciones = () => {
-    const s = (e,number) => {
-        if (hide === true) handleOpen();
-        let x = document.getElementsByClassName('itemSelected');
-        for (let i = 0; i< x.length; i++) {
-            x[i].classList.remove('itemSelected');
-        }
-        if (e.target.classList.contains('test')) e.target.className = 'test itemSelected';
-        else if (e.target.parentNode.classList.contains('test')) e.target.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.className = 'test itemSelected';
-        else if (e.target.parentNode.parentNode.parentNode.parentNode.classList.contains('test')) e.target.parentNode.parentNode.parentNode.parentNode.className = 'test itemSelected';
-
-        //setTitle(number); 
-    };
-    const [indice,setIndice] = useState(-1);
-    const [prescripcion, setPrescripcion] = useState();
+    const [indice] = useState(-1);
+    const [, setPrescripcion] = useState();
     const [prescripciones, setPrescripciones] = useState([]);
     const [identificador, setIdentificador] = useState("0");
     const [paciente, setPaciente] = useState("");
@@ -102,6 +89,7 @@ const Prescripciones = () => {
 
     useEffect(() => {
         setPrescripcion({...prescripciones[indice]});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[indice]);
 
     const getItems = async() => {
@@ -144,7 +132,7 @@ const Prescripciones = () => {
     }
     const Item = (props) => {
         return(
-        <div  onClick={(e) => cargarPrescripcion(props.number)} className="test">
+        <div  onClick={() => cargarPrescripcion(props.number)} className="test">
         <ListItem key={props.key}>
             <ListItemText
                 primary={props.id}
@@ -163,10 +151,9 @@ const Prescripciones = () => {
     );
 }
     const [query, setQuery] = useState('');
-    const [title, setTitle] = useState('P0');
+    const [title] = useState('P0');
     const [hide, setHide] = useState(false);
     const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     const _lg = 1200; // Default lg size
@@ -190,7 +177,7 @@ const Prescripciones = () => {
         if(window.innerWidth < _lg) {
             setHide(true);
         }
-    },[]);
+    },[changeNavState]);
     useEffect(() => {
         getItems()
     },[])
